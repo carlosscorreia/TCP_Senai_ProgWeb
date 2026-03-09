@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lanchonete Express</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+  <nav>
+    <a href="index.html">Cardápio</a>
+    <a href="login.html" id="nav-login">Entrar</a>
+    <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+    <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+    <a href="carrinho.html" class="carrinho-icon">
+      🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+    </a>
+  </nav>
+</header>
+
+<main>
+  <div class="categorias" id="categorias">
+    <button class="btn-categoria ativo" onclick="filtrarCategoria('todas', event)">Todos</button>
+  </div>
+
+  <div class="produtos-grid" id="produtos-grid">
+    <p>Carregando produtos...</p>
+  </div>
+</main>
+
+<footer>
+  <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+  <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrinho.js"></script>
+<script>
+  let todosProdutos = [];
+
+  async function carregarProdutos() {
+    try {
+      const produtos = await apiFetch('/api/products');
+      todosProdutos = produtos;
+      renderizarCategorias(produtos);
+      renderizarProdutos(produtos);
+    } catch (error) {
+      document.getElementById('produtos-grid').innerHTML =
+        '<p style="padding:32px;">Erro ao carregar produtos. Tente novamente.</p>';
+    }
+  }
+
+  function renderizarCategorias(produtos) {
+    const categorias = [...new Set(produtos.map(p => p.categoria))];
+    const container = document.getElementById('categorias');
+    categorias.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'btn-categoria';
+      btn.textContent = cat;
+      btn.onclick = (e) => filtrarCategoria(cat, e);
+      container.appendChild(btn);
+    });
+  }
+
+  function filtrarCategoria(categoria, event) {
+    document.querySelectorAll('.btn-categoria').forEach(b => b.classList.remove('ativo'));
+    event.target.classList.add('ativo');
+
+    const filtrados = categoria === 'todas'
+      ? todosProdutos
+      : todosProdutos.filter(p => p.categoria === categoria);
+
+    renderizarProdutos(filtrados);
+  }
+
+  function renderizarProdutos(produtos) {
+    const grid = document.getElementById('produtos-grid');
+    if (produtos.length === 0) {
+      grid.innerHTML = '<p style="padding:32px;">Nenhum produto encontrado.</p>';
+      return;
+    }
+
+    grid.innerHTML = produtos.map(p => `
+      <div class="card-produto">
+        <img src="${p.imagem_url}" alt="${p.nome}">
+        <div class="card-produto-info">
+          <h3>${p.nome}</h3>
+          <p>${p.descricao}</p>
+          <div class="card-produto-preco">
+            <div>
+              ${p.preco_promocional
+                ? `<span class="preco-original">R$ ${parseFloat(p.preco).toFixed(2)}</span>
+                   <span class="preco">R$ ${parseFloat(p.preco_promocional).toFixed(2)}</span>`
+                : `<span class="preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>`
+              }
+            </div>
+            <button class="btn btn-laranja" onclick='adicionarAoCarrinho(${JSON.stringify(p)}, event)'>
+              + Adicionar
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  carregarProdutos();
+</script>
+
+</body>
+</html>
