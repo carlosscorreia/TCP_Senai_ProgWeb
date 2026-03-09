@@ -3,11 +3,15 @@ const cors = require('cors');
 require('dotenv').config();
 require('./config/db');
 
+const userRoutes = require('./routes/userRoutes');
+
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+app.use('/api/users', userRoutes);
 
 // Rota de teste
 app.get('/health', (req, res) => {
