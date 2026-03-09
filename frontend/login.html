@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Lanchonete Express</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .form-container {
+      max-width: 420px;
+      margin: 60px auto;
+      background: var(--branco);
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .form-container h1 {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      color: var(--laranja);
+    }
+
+    .form-container button {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .cadastro-link {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.9rem;
+    }
+
+    .cadastro-link a {
+      color: var(--laranja);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    @media (max-width: 600px) {
+      .form-container {
+        margin: 20px 16px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+  <nav>
+    <a href="index.html">Cardápio</a>
+    <a href="login.html" id="nav-login">Entrar</a>
+    <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+    <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+    <a href="carrinho.html" class="carrinho-icon">
+      🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+    </a>
+  </nav>
+</header>
+
+<main>
+  <div class="form-container">
+    <h1>Entrar</h1>
+
+    <div id="mensagem"></div>
+
+    <div class="input-group">
+      <label>E-mail</label>
+      <input type="email" id="email" placeholder="seu@email.com">
+    </div>
+
+    <div class="input-group">
+      <label>Senha</label>
+      <input type="password" id="senha" placeholder="Sua senha">
+    </div>
+
+    <button class="btn btn-laranja" onclick="fazerLogin()">Entrar</button>
+
+    <p class="cadastro-link">Não tem conta? <a href="cadastro.html">Cadastrar</a></p>
+  </div>
+</main>
+
+<footer>
+  <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+  <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrinho.js"></script>
+<script>
+  async function fazerLogin() {
+    const mensagem = document.getElementById('mensagem');
+
+    const dados = {
+      email: document.getElementById('email').value,
+      senha: document.getElementById('senha').value,
+    };
+
+    if (!dados.email || !dados.senha) {
+      mensagem.innerHTML = '<div class="mensagem-erro">Preencha e-mail e senha!</div>';
+      return;
+    }
+
+    try {
+      const resposta = await apiFetch('/api/users/login', {
+        method: 'POST',
+        body: JSON.stringify(dados),
+      });
+
+      localStorage.setItem('token', resposta.token);
+      localStorage.setItem('nomeUsuario', resposta.nome);
+
+      mensagem.innerHTML = `<div class="mensagem-sucesso">Bem-vindo, ${resposta.nome}! Redirecionando...</div>`;
+      setTimeout(() => window.location.href = 'index.html', 1500);
+
+    } catch (error) {
+      mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
+    }
+  }
+</script>
+
+</body>
+</html>
