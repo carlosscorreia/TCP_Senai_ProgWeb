@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Pedido — Lanchonete Express</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <style>
+        .pedido-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .pedido-container h1 {
+            font-size: 1.5rem;
+            color: var(--laranja);
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: var(--branco);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .card h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--texto);
+        }
+
+        .resumo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--cinza-medio);
+            font-size: 0.9rem;
+        }
+
+        .resumo-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--laranja);
+            margin-top: 12px;
+        }
+
+        .qrcode-container {
+            display: none;
+            text-align: center;
+            padding: 32px;
+        }
+
+        .qrcode-container h2 {
+            color: var(--verde);
+            margin-bottom: 8px;
+        }
+
+        .qrcode-container p {
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+
+        #qrcode {
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .pedido-container {
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+        <nav>
+            <a href="index.html">Cardápio</a>
+            <a href="login.html" id="nav-login">Entrar</a>
+            <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+            <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+            <a href="carrinho.html" class="carrinho-icon">
+                🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="pedido-container">
+            <h1>Finalizar Pedido</h1>
+            <div id="mensagem"></div>
+
+            <!-- Formulário do pedido -->
+            <div id="form-pedido">
+                <div class="card">
+                    <h2>📋 Resumo do pedido</h2>
+                    <div id="resumo-itens"></div>
+                </div>
+
+                <div class="card">
+                    <h2>📍 Endereço de entrega</h2>
+                    <div class="input-group">
+                        <label>Endereço completo</label>
+                        <textarea id="endereco" rows="3" placeholder="Rua, número, bairro, cidade"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Observações (opcional)</label>
+                        <textarea id="observacao" rows="2" placeholder="Ex: Sem cebola, portão azul..."></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-verde" style="width:100%;" onclick="finalizarPedido()">
+                    Confirmar Pedido
+                </button>
+            </div>
+
+            <!-- QR Code -->
+            <div class="qrcode-container card" id="qrcode-container">
+                <h2>✅ Pedido confirmado!</h2>
+                <p>Escaneie o QR Code abaixo para enviar seu pedido pelo WhatsApp</p>
+                <div id="qrcode"></div>
+                <a id="whatsapp-link" href="#" target="_blank" class="btn btn-verde">
+                    📱 Abrir WhatsApp
+                </a>
+                <br><br>
+                <a href="index.html" class="btn btn-outline" style="margin-top:12px;">
+                    Voltar ao cardápio
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+        <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/carrinho.js"></script>
+    <script>
+        // Verifica login
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
+
+        async function renderizarResumo() {
+            const carrinho = getCarrinho();
+            const container = document.getElementById('resumo-itens');
+
+            if (carrinho.length === 0) {
+                window.location.href = 'carrinho.html';
+                return;
+            }
+
+            const itensHTML = carrinho.map(item => {
+                const preco = item.preco_promocional || item.preco;
+                const subtotal = (parseFloat(preco) * item.quantidade).toFixed(2);
+                return `
+      <div class="resumo-item">
+        <span>${item.nome} x${item.quantidade}</span>
+        <span>R$ ${subtotal}</span>
+      </div>`;
+            }).join('');
+
+            container.innerHTML = itensHTML + `
+    <div class="resumo-total">
+      <span>Total</span>
+      <span>R$ ${calcularTotal()}</span>
+    </div>`;
+
+            // Busca endereço do perfil automaticamente
+            try {
+                const perfil = await apiFetch('/api/users/profile');
+                if (perfil.rua) {
+                    document.getElementById('endereco').value =
+                        `${perfil.rua}, ${perfil.numero} — ${perfil.bairro}, ${perfil.cidade} - ${perfil.estado}`;
+                }
+            } catch (error) {
+                // usuário preenche manualmente
+            }
+        }
+
+        async function finalizarPedido() {
+            const mensagem = document.getElementById('mensagem');
+            const endereco = document.getElementById('endereco').value;
+            const observacao = document.getElementById('observacao').value;
+            const carrinho = getCarrinho();
+
+            if (!endereco) {
+                mensagem.innerHTML = '<div class="mensagem-erro">Informe o endereço de entrega!</div>';
+                return;
+            }
+
+            const itens = carrinho.map(item => ({
+                produto_id: item.id,
+                quantidade: item.quantidade,
+                preco_unitario: item.preco_promocional || item.preco,
+            }));
+
+            try {
+                await apiFetch('/api/orders', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        total: calcularTotal(),
+                        endereco_entrega: endereco,
+                        observacao,
+                        itens,
+                    }),
+                });
+
+                const link = gerarLinkWhatsApp(carrinho, calcularTotal(), endereco, observacao);
+
+                document.getElementById('form-pedido').style.display = 'none';
+                const qrcodeContainer = document.getElementById('qrcode-container');
+                qrcodeContainer.style.display = 'block';
+                document.getElementById('whatsapp-link').href = link;
+
+                QRCode.toDataURL(link, { width: 250 }, function (err, url) {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style.width = '250px';
+                    document.getElementById('qrcode').appendChild(img);
+                });
+
+                limparCarrinho();
+
+            } catch (error) {
+                mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
+            }
+        }
+
+        function gerarLinkWhatsApp(carrinho, total, endereco, observacao) {
+            const telefone = '5575988313141';
+
+            const itens = carrinho.map(item => {
+                const preco = item.preco_promocional || item.preco;
+                return `  - ${item.nome} x${item.quantidade} = R$ ${(parseFloat(preco) * item.quantidade).toFixed(2)}`;
+            }).join('\n');
+
+            const mensagem = `*🍔 NOVO PEDIDO — Lanchonete Express*
+
+*Itens:*
+${itens}
+
+*Total: R$ ${total}*
+
+*Endereço de entrega:*
+${endereco}
+
+*Observações:* ${observacao || 'Nenhuma'}`;
+
+            return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+        }
+
+        // Chama ao carregar a página
+        renderizarResumo();
+    </script>
+
+</body>
+
+</html>

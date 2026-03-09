@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho — Lanchonete Express</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .carrinho-container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    .carrinho-container h1 {
+      font-size: 1.5rem;
+      color: var(--laranja);
+      margin-bottom: 24px;
+    }
+
+    .item-carrinho {
+      background: var(--branco);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .item-carrinho img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .item-info {
+      flex: 1;
+    }
+
+    .item-info h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .item-info p {
+      font-size: 0.9rem;
+      color: var(--laranja);
+      font-weight: 600;
+    }
+
+    .item-quantidade {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .item-quantidade button {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--laranja);
+      background: transparent;
+      color: var(--laranja);
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .item-quantidade button:hover {
+      background: var(--laranja);
+      color: var(--branco);
+    }
+
+    .item-quantidade span {
+      font-size: 1rem;
+      font-weight: 600;
+      min-width: 20px;
+      text-align: center;
+    }
+
+    .btn-remover {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      color: #999;
+      padding: 4px;
+    }
+
+    .btn-remover:hover {
+      color: #C62828;
+    }
+
+    .carrinho-resumo {
+      background: var(--branco);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-top: 24px;
+    }
+
+    .resumo-linha {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .resumo-total {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--laranja);
+      border-top: 2px solid var(--cinza-medio);
+      padding-top: 12px;
+      margin-top: 12px;
+    }
+
+    .carrinho-vazio {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .carrinho-vazio p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .item-carrinho {
+        flex-wrap: wrap;
+      }
+
+      .item-carrinho img {
+        width: 60px;
+        height: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+  <nav>
+    <a href="index.html">Cardápio</a>
+    <a href="login.html" id="nav-login">Entrar</a>
+    <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+    <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+    <a href="carrinho.html" class="carrinho-icon">
+      🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+    </a>
+  </nav>
+</header>
+
+<main>
+  <div class="carrinho-container">
+    <h1>🛒 Meu Carrinho</h1>
+    <div id="carrinho-conteudo"></div>
+  </div>
+</main>
+
+<footer>
+  <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+  <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+</footer>
+
+<script src="js/api.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/carrinho.js"></script>
+<script>
+  function renderizarCarrinho() {
+    const carrinho = getCarrinho();
+    const container = document.getElementById('carrinho-conteudo');
+
+    if (carrinho.length === 0) {
+      container.innerHTML = `
+        <div class="carrinho-vazio">
+          <p>Seu carrinho está vazio 😕</p>
+          <a href="index.html" class="btn btn-laranja">Ver cardápio</a>
+        </div>`;
+      return;
+    }
+
+    const itensHTML = carrinho.map(item => {
+      const preco = item.preco_promocional || item.preco;
+      const subtotal = (parseFloat(preco) * item.quantidade).toFixed(2);
+      return `
+        <div class="item-carrinho">
+          <img src="${item.imagem_url}" alt="${item.nome}">
+          <div class="item-info">
+            <h3>${item.nome}</h3>
+            <p>R$ ${parseFloat(preco).toFixed(2)} cada</p>
+          </div>
+          <div class="item-quantidade">
+            <button onclick="mudarQuantidade(${item.id}, ${item.quantidade - 1})">−</button>
+            <span>${item.quantidade}</span>
+            <button onclick="mudarQuantidade(${item.id}, ${item.quantidade + 1})">+</button>
+          </div>
+          <strong style="min-width:80px; text-align:right;">R$ ${subtotal}</strong>
+          <button class="btn-remover" onclick="removerItem(${item.id})">🗑️</button>
+        </div>`;
+    }).join('');
+
+    const total = calcularTotal();
+
+    const resumoHTML = `
+      <div class="carrinho-resumo">
+        <div class="resumo-linha">
+          <span>${carrinho.reduce((s, i) => s + i.quantidade, 0)} itens</span>
+        </div>
+        <div class="resumo-total">
+          <span>Total</span>
+          <span>R$ ${total}</span>
+        </div>
+        <button class="btn btn-verde" style="width:100%; margin-top:16px;" onclick="irParaPedido()">
+          Finalizar Pedido →
+        </button>
+      </div>`;
+
+    container.innerHTML = itensHTML + resumoHTML;
+  }
+
+  function mudarQuantidade(id, novaQtd) {
+    alterarQuantidade(id, novaQtd);
+    renderizarCarrinho();
+  }
+
+  function removerItem(id) {
+    removerDoCarrinho(id);
+    renderizarCarrinho();
+  }
+
+  function irParaPedido() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Você precisa estar logado para finalizar o pedido!');
+      window.location.href = 'login.html';
+      return;
+    }
+    window.location.href = 'pedido.html';
+  }
+
+  renderizarCarrinho();
+</script>
+
+</body>
+</html>
