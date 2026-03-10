@@ -1,90 +1,143 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lanchonete Express</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-<header>
-  <a href="index.html" class="logo">🍔 Lanchonete Express</a>
-  <nav>
-    <a href="index.html">Cardápio</a>
-    <a href="login.html" id="nav-login">Entrar</a>
-    <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
-    <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
-    <a href="carrinho.html" class="carrinho-icon">
-      🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
-    </a>
-  </nav>
-</header>
+  <header>
+    <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+    <nav>
+      <a href="index.html">Cardápio</a>
+      <a href="meus-pedidos.html" id="nav-pedidos" style="display:none;">Meus Pedidos</a>
+      <a href="login.html" id="nav-login">Entrar</a>
+      <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+      <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+      <a href="carrinho.html" class="carrinho-icon">
+        🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+      </a>
+    </nav>
+  </header>
 
-<main>
-  <div class="categorias" id="categorias">
-    <button class="btn-categoria ativo" onclick="filtrarCategoria('todas', event)">Todos</button>
-  </div>
+  <main>
+    <div class="categorias" id="categorias">
+      <button class="btn-categoria ativo" onclick="filtrarCategoria('todas', event)">Todos</button>
+    </div>
 
-  <div class="produtos-grid" id="produtos-grid">
-    <p>Carregando produtos...</p>
-  </div>
-</main>
+    <div class="produtos-grid" id="produtos-grid">
+      <p>Carregando produtos...</p>
+    </div>
+  </main>
 
-<footer>
-  <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
-  <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
-</footer>
+  <footer>
+    <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+    <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+  </footer>
 
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/carrinho.js"></script>
-<script>
-  let todosProdutos = [];
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script>
+    let todosProdutos = [];
 
-  async function carregarProdutos() {
-    try {
-      const produtos = await apiFetch('/api/products');
-      todosProdutos = produtos;
-      renderizarCategorias(produtos);
-      renderizarProdutos(produtos);
-    } catch (error) {
-      document.getElementById('produtos-grid').innerHTML =
-        '<p style="padding:32px;">Erro ao carregar produtos. Tente novamente.</p>';
-    }
-  }
+    async function carregarMeusPedidos() {
+      const token = localStorage.getItem('token');
+      if (!token) return;
 
-  function renderizarCategorias(produtos) {
-    const categorias = [...new Set(produtos.map(p => p.categoria))];
-    const container = document.getElementById('categorias');
-    categorias.forEach(cat => {
-      const btn = document.createElement('button');
-      btn.className = 'btn-categoria';
-      btn.textContent = cat;
-      btn.onclick = (e) => filtrarCategoria(cat, e);
-      container.appendChild(btn);
-    });
-  }
+      try {
+        const pedidos = await apiFetch('/api/orders/my');
+        const section = document.getElementById('meus-pedidos-section');
+        const lista = document.getElementById('meus-pedidos-lista');
 
-  function filtrarCategoria(categoria, event) {
-    document.querySelectorAll('.btn-categoria').forEach(b => b.classList.remove('ativo'));
-    event.target.classList.add('ativo');
+        if (pedidos.length === 0) return;
 
-    const filtrados = categoria === 'todas'
-      ? todosProdutos
-      : todosProdutos.filter(p => p.categoria === categoria);
+        section.style.display = 'block';
 
-    renderizarProdutos(filtrados);
-  }
+        lista.innerHTML = pedidos.slice(0, 3).map(p => `
+      <div class="pedido-card">
+        <div class="pedido-card-info">
+          <h3>Pedido #${p.id} — R$ ${parseFloat(p.total).toFixed(2)}</h3>
+          <p>${new Date(p.criado_em).toLocaleString('pt-BR')} · ${p.modalidade === 'retirada' ? '🏪 Retirada' : '🛵 Entrega'}</p>
+        </div>
+        <div class="pedido-card-acoes">
+          <span class="badge-status badge-${p.status}">${p.status}</span>
+          <button class="btn btn-outline" style="padding:6px 14px; font-size:0.85rem;"
+            onclick="pedirNovamente(${p.id})">🔁 Pedir novamente</button>
+        </div>
+      </div>
+    `).join('');
 
-  function renderizarProdutos(produtos) {
-    const grid = document.getElementById('produtos-grid');
-    if (produtos.length === 0) {
-      grid.innerHTML = '<p style="padding:32px;">Nenhum produto encontrado.</p>';
-      return;
+      } catch (e) { }
     }
 
-    grid.innerHTML = produtos.map(p => `
+    async function pedirNovamente(pedidoId) {
+      try {
+        const itens = await apiFetch(`/api/orders/${pedidoId}`);
+
+        // Busca produtos atuais para pegar preço e imagem
+        const produtos = await apiFetch('/api/products');
+
+        itens.forEach(item => {
+          const produto = produtos.find(p => p.id === item.produto_id);
+          if (produto) adicionarAoCarrinho(produto, new Event('click'));
+        });
+
+        window.location.href = 'carrinho.html';
+      } catch (e) {
+        alert('Erro ao recriar pedido.');
+      }
+    }
+
+    carregarMeusPedidos();
+
+    async function carregarProdutos() {
+      try {
+        const produtos = await apiFetch('/api/products');
+        todosProdutos = produtos;
+        renderizarCategorias(produtos);
+        renderizarProdutos(produtos);
+      } catch (error) {
+        document.getElementById('produtos-grid').innerHTML =
+          '<p style="padding:32px;">Erro ao carregar produtos. Tente novamente.</p>';
+      }
+    }
+
+    function renderizarCategorias(produtos) {
+      const categorias = [...new Set(produtos.map(p => p.categoria))];
+      const container = document.getElementById('categorias');
+      categorias.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-categoria';
+        btn.textContent = cat;
+        btn.onclick = (e) => filtrarCategoria(cat, e);
+        container.appendChild(btn);
+      });
+    }
+
+    function filtrarCategoria(categoria, event) {
+      document.querySelectorAll('.btn-categoria').forEach(b => b.classList.remove('ativo'));
+      event.target.classList.add('ativo');
+
+      const filtrados = categoria === 'todas'
+        ? todosProdutos
+        : todosProdutos.filter(p => p.categoria === categoria);
+
+      renderizarProdutos(filtrados);
+    }
+
+    function renderizarProdutos(produtos) {
+      const grid = document.getElementById('produtos-grid');
+      if (produtos.length === 0) {
+        grid.innerHTML = '<p style="padding:32px;">Nenhum produto encontrado.</p>';
+        return;
+      }
+
+      grid.innerHTML = produtos.map(p => `
       <div class="card-produto">
         <img src="${p.imagem_url}" alt="${p.nome}">
         <div class="card-produto-info">
@@ -93,10 +146,10 @@
           <div class="card-produto-preco">
             <div>
               ${p.preco_promocional
-                ? `<span class="preco-original">R$ ${parseFloat(p.preco).toFixed(2)}</span>
+          ? `<span class="preco-original">R$ ${parseFloat(p.preco).toFixed(2)}</span>
                    <span class="preco">R$ ${parseFloat(p.preco_promocional).toFixed(2)}</span>`
-                : `<span class="preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>`
-              }
+          : `<span class="preco">R$ ${parseFloat(p.preco).toFixed(2)}</span>`
+        }
             </div>
             <button class="btn btn-laranja" onclick='adicionarAoCarrinho(${JSON.stringify(p)}, event)'>
               + Adicionar
@@ -105,10 +158,15 @@
         </div>
       </div>
     `).join('');
-  }
+    }
 
-  carregarProdutos();
-</script>
+    carregarProdutos();
+    const navPedidos = document.getElementById('nav-pedidos');
+    if (localStorage.getItem('token') && navPedidos) {
+      navPedidos.style.display = 'inline';
+    }
+  </script>
 
 </body>
+
 </html>

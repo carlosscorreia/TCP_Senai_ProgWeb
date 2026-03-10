@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +27,7 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
     .item-carrinho img {
@@ -102,7 +103,7 @@
       background: var(--branco);
       border-radius: 12px;
       padding: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
       margin-top: 24px;
     }
 
@@ -147,54 +148,56 @@
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  <a href="index.html" class="logo">🍔 Lanchonete Express</a>
-  <nav>
-    <a href="index.html">Cardápio</a>
-    <a href="login.html" id="nav-login">Entrar</a>
-    <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
-    <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
-    <a href="carrinho.html" class="carrinho-icon">
-      🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
-    </a>
-  </nav>
-</header>
+  <header>
+    <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+    <nav>
+      <a href="index.html">Cardápio</a>
+      <a href="meus-pedidos.html" id="nav-pedidos" style="display:none;">Meus Pedidos</a>
+      <a href="login.html" id="nav-login">Entrar</a>
+      <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+      <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+      <a href="carrinho.html" class="carrinho-icon">
+        🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+      </a>
+    </nav>
+  </header>
 
-<main>
-  <div class="carrinho-container">
-    <h1>🛒 Meu Carrinho</h1>
-    <div id="carrinho-conteudo"></div>
-  </div>
-</main>
+  <main>
+    <div class="carrinho-container">
+      <h1>🛒 Meu Carrinho</h1>
+      <div id="carrinho-conteudo"></div>
+    </div>
+  </main>
 
-<footer>
-  <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
-  <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
-</footer>
+  <footer>
+    <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+    <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+  </footer>
 
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/carrinho.js"></script>
-<script>
-  function renderizarCarrinho() {
-    const carrinho = getCarrinho();
-    const container = document.getElementById('carrinho-conteudo');
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script>
+    function renderizarCarrinho() {
+      const carrinho = getCarrinho();
+      const container = document.getElementById('carrinho-conteudo');
 
-    if (carrinho.length === 0) {
-      container.innerHTML = `
+      if (carrinho.length === 0) {
+        container.innerHTML = `
         <div class="carrinho-vazio">
           <p>Seu carrinho está vazio 😕</p>
           <a href="index.html" class="btn btn-laranja">Ver cardápio</a>
         </div>`;
-      return;
-    }
+        return;
+      }
 
-    const itensHTML = carrinho.map(item => {
-      const preco = item.preco_promocional || item.preco;
-      const subtotal = (parseFloat(preco) * item.quantidade).toFixed(2);
-      return `
+      const itensHTML = carrinho.map(item => {
+        const preco = item.preco_promocional || item.preco;
+        const subtotal = (parseFloat(preco) * item.quantidade).toFixed(2);
+        return `
         <div class="item-carrinho">
           <img src="${item.imagem_url}" alt="${item.nome}">
           <div class="item-info">
@@ -209,11 +212,11 @@
           <strong style="min-width:80px; text-align:right;">R$ ${subtotal}</strong>
           <button class="btn-remover" onclick="removerItem(${item.id})">🗑️</button>
         </div>`;
-    }).join('');
+      }).join('');
 
-    const total = calcularTotal();
+      const total = calcularTotal();
 
-    const resumoHTML = `
+      const resumoHTML = `
       <div class="carrinho-resumo">
         <div class="resumo-linha">
           <span>${carrinho.reduce((s, i) => s + i.quantidade, 0)} itens</span>
@@ -227,31 +230,36 @@
         </button>
       </div>`;
 
-    container.innerHTML = itensHTML + resumoHTML;
-  }
-
-  function mudarQuantidade(id, novaQtd) {
-    alterarQuantidade(id, novaQtd);
-    renderizarCarrinho();
-  }
-
-  function removerItem(id) {
-    removerDoCarrinho(id);
-    renderizarCarrinho();
-  }
-
-  function irParaPedido() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      alert('Você precisa estar logado para finalizar o pedido!');
-      window.location.href = 'login.html';
-      return;
+      container.innerHTML = itensHTML + resumoHTML;
     }
-    window.location.href = 'pedido.html';
-  }
 
-  renderizarCarrinho();
-</script>
+    function mudarQuantidade(id, novaQtd) {
+      alterarQuantidade(id, novaQtd);
+      renderizarCarrinho();
+    }
+
+    function removerItem(id) {
+      removerDoCarrinho(id);
+      renderizarCarrinho();
+    }
+
+    function irParaPedido() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Você precisa estar logado para finalizar o pedido!');
+        window.location.href = 'login.html';
+        return;
+      }
+      window.location.href = 'pedido.html';
+    }
+
+    renderizarCarrinho();
+    const navPedidos = document.getElementById('nav-pedidos');
+    if (localStorage.getItem('token') && navPedidos) {
+      navPedidos.style.display = 'inline';
+    }
+  </script>
 
 </body>
+
 </html>

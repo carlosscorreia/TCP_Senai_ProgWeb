@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +13,7 @@
       background: var(--branco);
       padding: 32px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .form-container h1 {
@@ -57,140 +58,147 @@
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  <a href="index.html" class="logo">🍔 Lanchonete Express</a>
-  <nav>
-    <a href="index.html">Cardápio</a>
-    <a href="login.html" id="nav-login">Entrar</a>
-    <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
-    <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
-    <a href="carrinho.html" class="carrinho-icon">
-      🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
-    </a>
-  </nav>
-</header>
+  <header>
+    <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+    <nav>
+      <a href="index.html">Cardápio</a>
+      <a href="meus-pedidos.html" id="nav-pedidos" style="display:none;">Meus Pedidos</a>
+      <a href="login.html" id="nav-login">Entrar</a>
+      <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+      <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+      <a href="carrinho.html" class="carrinho-icon">
+        🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+      </a>
+    </nav>
+  </header>
 
-<main>
-  <div class="form-container">
-    <h1>Criar conta</h1>
+  <main>
+    <div class="form-container">
+      <h1>Criar conta</h1>
 
-    <div id="mensagem"></div>
+      <div id="mensagem"></div>
 
-    <div class="form-row">
-      <div class="input-group">
-        <label>Nome completo</label>
-        <input type="text" id="nome" placeholder="Seu nome">
+      <div class="form-row">
+        <div class="input-group">
+          <label>Nome completo</label>
+          <input type="text" id="nome" placeholder="Seu nome">
+        </div>
+        <div class="input-group">
+          <label>Telefone / WhatsApp</label>
+          <input type="text" id="telefone" placeholder="(71) 99999-0000">
+        </div>
       </div>
-      <div class="input-group">
-        <label>Telefone / WhatsApp</label>
-        <input type="text" id="telefone" placeholder="(71) 99999-0000">
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>E-mail</label>
+          <input type="email" id="email" placeholder="seu@email.com">
+        </div>
+        <div class="input-group">
+          <label>Senha</label>
+          <input type="password" id="senha" placeholder="Mínimo 6 caracteres">
+        </div>
       </div>
+
+      <hr style="margin: 16px 0; border-color: var(--cinza-medio);">
+      <p style="font-weight:600; margin-bottom:16px;">Endereço de entrega</p>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>CEP</label>
+          <input type="text" id="cep" placeholder="00000-000" onblur="buscarCep(this.value)">
+        </div>
+        <div class="input-group">
+          <label>Número</label>
+          <input type="text" id="numero" placeholder="Ex: 123">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Rua</label>
+        <input type="text" id="rua" placeholder="Preenchido automaticamente">
+      </div>
+
+      <div class="form-row">
+        <div class="input-group">
+          <label>Bairro</label>
+          <input type="text" id="bairro" placeholder="Preenchido automaticamente">
+        </div>
+        <div class="input-group">
+          <label>Cidade</label>
+          <input type="text" id="cidade" placeholder="Preenchido automaticamente">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Estado</label>
+        <input type="text" id="estado" placeholder="Ex: BA" maxlength="2">
+      </div>
+
+      <button class="btn btn-laranja" onclick="cadastrar()">Criar conta</button>
+
+      <p class="login-link">Já tem conta? <a href="login.html">Entrar</a></p>
     </div>
+  </main>
 
-    <div class="form-row">
-      <div class="input-group">
-        <label>E-mail</label>
-        <input type="email" id="email" placeholder="seu@email.com">
-      </div>
-      <div class="input-group">
-        <label>Senha</label>
-        <input type="password" id="senha" placeholder="Mínimo 6 caracteres">
-      </div>
-    </div>
+  <footer>
+    <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+    <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+  </footer>
 
-    <hr style="margin: 16px 0; border-color: var(--cinza-medio);">
-    <p style="font-weight:600; margin-bottom:16px;">Endereço de entrega</p>
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/carrinho.js"></script>
+  <script src="js/cep.js"></script>
+  <script>
+    async function cadastrar() {
+      const mensagem = document.getElementById('mensagem');
 
-    <div class="form-row">
-      <div class="input-group">
-        <label>CEP</label>
-        <input type="text" id="cep" placeholder="00000-000" onblur="buscarCep(this.value)">
-      </div>
-      <div class="input-group">
-        <label>Número</label>
-        <input type="text" id="numero" placeholder="Ex: 123">
-      </div>
-    </div>
+      const dados = {
+        nome: document.getElementById('nome').value,
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value,
+        telefone: document.getElementById('telefone').value,
+        cep: document.getElementById('cep').value,
+        rua: document.getElementById('rua').value,
+        numero: document.getElementById('numero').value,
+        bairro: document.getElementById('bairro').value,
+        cidade: document.getElementById('cidade').value,
+        estado: document.getElementById('estado').value,
+      };
 
-    <div class="input-group">
-      <label>Rua</label>
-      <input type="text" id="rua" placeholder="Preenchido automaticamente">
-    </div>
+      if (!dados.nome || !dados.email || !dados.senha) {
+        mensagem.innerHTML = '<div class="mensagem-erro">Preencha nome, e-mail e senha!</div>';
+        return;
+      }
 
-    <div class="form-row">
-      <div class="input-group">
-        <label>Bairro</label>
-        <input type="text" id="bairro" placeholder="Preenchido automaticamente">
-      </div>
-      <div class="input-group">
-        <label>Cidade</label>
-        <input type="text" id="cidade" placeholder="Preenchido automaticamente">
-      </div>
-    </div>
+      if (dados.senha.length < 6) {
+        mensagem.innerHTML = '<div class="mensagem-erro">A senha deve ter no mínimo 6 caracteres!</div>';
+        return;
+      }
 
-    <div class="input-group">
-      <label>Estado</label>
-      <input type="text" id="estado" placeholder="Ex: BA" maxlength="2">
-    </div>
+      try {
+        await apiFetch('/api/users/register', {
+          method: 'POST',
+          body: JSON.stringify(dados),
+        });
 
-    <button class="btn btn-laranja" onclick="cadastrar()">Criar conta</button>
+        mensagem.innerHTML = '<div class="mensagem-sucesso">Conta criada com sucesso! Redirecionando...</div>';
+        setTimeout(() => window.location.href = 'login.html', 2000);
 
-    <p class="login-link">Já tem conta? <a href="login.html">Entrar</a></p>
-  </div>
-</main>
-
-<footer>
-  <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
-  <p>📱 WhatsApp: (71) 99999-0000 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
-</footer>
-
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/carrinho.js"></script>
-<script src="js/cep.js"></script>
-<script>
-  async function cadastrar() {
-    const mensagem = document.getElementById('mensagem');
-
-    const dados = {
-      nome:     document.getElementById('nome').value,
-      email:    document.getElementById('email').value,
-      senha:    document.getElementById('senha').value,
-      telefone: document.getElementById('telefone').value,
-      cep:      document.getElementById('cep').value,
-      rua:      document.getElementById('rua').value,
-      numero:   document.getElementById('numero').value,
-      bairro:   document.getElementById('bairro').value,
-      cidade:   document.getElementById('cidade').value,
-      estado:   document.getElementById('estado').value,
-    };
-
-    if (!dados.nome || !dados.email || !dados.senha) {
-      mensagem.innerHTML = '<div class="mensagem-erro">Preencha nome, e-mail e senha!</div>';
-      return;
+      } catch (error) {
+        mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
+      }
     }
-
-    if (dados.senha.length < 6) {
-      mensagem.innerHTML = '<div class="mensagem-erro">A senha deve ter no mínimo 6 caracteres!</div>';
-      return;
+    const navPedidos = document.getElementById('nav-pedidos');
+    if (localStorage.getItem('token') && navPedidos) {
+      navPedidos.style.display = 'inline';
     }
-
-    try {
-      await apiFetch('/api/users/register', {
-        method: 'POST',
-        body: JSON.stringify(dados),
-      });
-
-      mensagem.innerHTML = '<div class="mensagem-sucesso">Conta criada com sucesso! Redirecionando...</div>';
-      setTimeout(() => window.location.href = 'login.html', 2000);
-
-    } catch (error) {
-      mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
-    }
-  }
-</script>
+  </script>
 
 </body>
+
 </html>

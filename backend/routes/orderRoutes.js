@@ -6,6 +6,7 @@ const { verificarUsuario, verificarAdmin } = require('../middleware/auth');
 // Rotas do usuário
 router.post('/', verificarUsuario, orderController.create);
 router.get('/my', verificarUsuario, orderController.getMeusPedidos);
+router.get('/my/:id', verificarUsuario, orderController.getItensPedidoUsuario);
 
 // Rotas do admin
 router.get('/', verificarAdmin, orderController.getAll);

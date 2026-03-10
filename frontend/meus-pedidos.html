@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Pedidos — Lanchonete Express</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .pedidos-container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .pedidos-container h1 {
+            font-size: 1.5rem;
+            color: var(--laranja);
+            margin-bottom: 24px;
+        }
+
+        .pedido-card {
+            background: var(--branco);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .pedido-card-topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .pedido-card-topo h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .pedido-card-topo p {
+            font-size: 0.82rem;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .badge-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-pendente {
+            background: #FFF3E0;
+            color: #E65100;
+        }
+
+        .badge-confirmado {
+            background: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .badge-entregue {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .badge-cancelado {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .pedido-itens {
+            background: var(--cinza-claro);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.88rem;
+            color: #555;
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        .pedido-total {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--texto);
+        }
+
+        .pedido-acoes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .pedido-acoes button {
+            padding: 10px;
+            font-size: 0.88rem;
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .vazio p {
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+
+        /* Modal detalhes */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.aberto {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--branco);
+            border-radius: 12px;
+            padding: 28px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal h2 {
+            font-size: 1.1rem;
+            color: var(--laranja);
+            margin-bottom: 4px;
+        }
+
+        .modal .data-pedido {
+            font-size: 0.82rem;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        .progresso {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-bottom: 20px;
+        }
+
+        .etapa {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            position: relative;
+        }
+
+        .etapa:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 22px;
+            width: 2px;
+            height: 100%;
+            background: var(--cinza-medio);
+        }
+
+        .etapa.ativa::before {
+            background: var(--laranja);
+        }
+
+        .etapa-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--cinza-medio);
+            border: 3px solid var(--cinza-medio);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .etapa.ativa .etapa-dot {
+            background: var(--laranja);
+            border-color: var(--laranja);
+        }
+
+        .etapa-info {
+            padding-bottom: 20px;
+        }
+
+        .etapa-info strong {
+            font-size: 0.9rem;
+            display: block;
+        }
+
+        .etapa-info span {
+            font-size: 0.8rem;
+            color: #999;
+        }
+
+        .secao-titulo {
+            font-weight: 600;
+            font-size: 0.88rem;
+            background: var(--cinza-claro);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 14px 0 8px;
+        }
+
+        .detalhe-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--cinza-medio);
+            font-size: 0.88rem;
+        }
+
+        .detalhe-item:last-child {
+            border-bottom: none;
+        }
+
+        .detalhe-item img {
+            width: 44px;
+            height: 44px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .detalhe-item .nome {
+            font-weight: 500;
+        }
+
+        .detalhe-item .preco {
+            color: var(--laranja);
+            font-weight: 600;
+        }
+
+        .linha-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            padding: 6px 0;
+            color: #666;
+        }
+
+        .linha-total.total-final {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--texto);
+            border-top: 2px solid var(--cinza-medio);
+            margin-top: 6px;
+            padding-top: 10px;
+        }
+
+        .btn-fechar {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .pedido-acoes {
+                grid-template-columns: 1fr;
+            }
+
+            .pedidos-container {
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+        <nav>
+            <a href="index.html">Cardápio</a>
+            <a href="meus-pedidos.html" id="nav-pedidos" style="display:none;">Meus Pedidos</a>
+            <a href="login.html" id="nav-login">Entrar</a>
+            <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+            <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+            <a href="carrinho.html" class="carrinho-icon">
+                🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+            </a>
+        </nav>
+    </header>
+
+    <main>
+        <div class="pedidos-container">
+            <h1>📦 Meus Pedidos</h1>
+            <div id="lista-pedidos">
+                <p>Carregando...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal detalhes -->
+    <div class="modal-overlay" id="modal-detalhes">
+        <div class="modal">
+            <h2 id="modal-titulo">Pedido #0</h2>
+            <p class="data-pedido" id="modal-data"></p>
+
+            <div class="progresso" id="modal-progresso"></div>
+
+            <div class="secao-titulo">Forma de entrega</div>
+            <p id="modal-entrega" style="font-size:0.9rem; padding: 4px 0;"></p>
+
+            <div class="secao-titulo">Forma de pagamento</div>
+            <p id="modal-pagamento" style="font-size:0.9rem; padding: 4px 0;"></p>
+
+            <div class="secao-titulo">Itens do pedido</div>
+            <div id="modal-itens"></div>
+
+            <div style="margin-top:12px;">
+                <div class="linha-total total-final">
+                    <span>Total</span>
+                    <span id="modal-total"></span>
+                </div>
+            </div>
+
+            <button class="btn btn-outline btn-fechar" onclick="fecharModal()">Fechar</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+        <p>📱 WhatsApp: (75) 98831-3141 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/carrinho.js"></script>
+    <script>
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
+
+        // Mostra link "Meus Pedidos" no nav quando logado
+        const navPedidos = document.getElementById('nav-pedidos');
+        if (localStorage.getItem('token') && navPedidos) {
+            navPedidos.style.display = 'inline';
+        }
+
+        const ETAPAS = {
+            pendente: { label: 'Análise', desc: 'Loja analisando seu pedido', idx: 0 },
+            confirmado: { label: 'Preparação', desc: 'Preparando seu pedido', idx: 1 },
+            entregue: { label: 'Entregue', desc: 'Pedido entregue!', idx: 2 },
+            cancelado: { label: 'Cancelado', desc: 'Pedido cancelado', idx: -1 },
+        };
+
+        let todosPedidos = [];
+        let todosProdutos = [];
+
+        async function carregarPedidos() {
+            try {
+                todosProdutos = await apiFetch('/api/products');
+                todosPedidos = await apiFetch('/api/orders/my');
+                const lista = document.getElementById('lista-pedidos');
+
+                if (todosPedidos.length === 0) {
+                    lista.innerHTML = `
+          <div class="vazio">
+            <p>Você ainda não fez nenhum pedido 😕</p>
+            <a href="index.html" class="btn btn-laranja">Ver cardápio</a>
+          </div>`;
+                    return;
+                }
+
+                lista.innerHTML = todosPedidos.map(p => {
+                    const itensTexto = p.itens
+                        ? p.itens.map(i => `${i.quantidade}x ${i.produto_nome}`).join('<br>')
+                        : 'Carregando itens...';
+
+                    return `
+          <div class="pedido-card">
+            <div class="pedido-card-topo">
+              <div>
+                <h3>Pedido #${p.id}</h3>
+                <p>${new Date(p.criado_em).toLocaleString('pt-BR')} · ${p.modalidade === 'retirada' ? '🏪 Retirada' : '🛵 Entrega'}</p>
+              </div>
+              <span class="badge-status badge-${p.status}">${p.status}</span>
+            </div>
+            <div class="pedido-itens" id="itens-${p.id}">Carregando itens...</div>
+            <p class="pedido-total">R$ ${parseFloat(p.total).toFixed(2)}</p>
+            <div class="pedido-acoes">
+              <button class="btn btn-outline" onclick="verDetalhes(${p.id})">🔍 Detalhes</button>
+              <button class="btn btn-laranja" onclick="pedirNovamente(${p.id})">🔁 Pedir novamente</button>
+            </div>
+          </div>`;
+                }).join('');
+
+                // Carrega itens de cada pedido
+                todosPedidos.forEach(p => carregarItensPedido(p.id));
+
+            } catch (e) {
+                document.getElementById('lista-pedidos').innerHTML =
+                    '<p style="color:red;">Erro ao carregar pedidos.</p>';
+            }
+        }
+
+        async function carregarItensPedido(pedidoId) {
+            try {
+                const itens = await apiFetch(`/api/orders/my/${pedidoId}`);
+                const el = document.getElementById(`itens-${pedidoId}`);
+                if (el) {
+                    el.innerHTML = itens.map(i => `${i.quantidade}x ${i.produto_nome}`).join('<br>');
+                }
+                // Salva itens no pedido para uso no modal
+                const pedido = todosPedidos.find(p => p.id === pedidoId);
+                if (pedido) pedido.itens = itens;
+            } catch (e) { }
+        }
+
+        async function verDetalhes(pedidoId) {
+            const pedido = todosPedidos.find(p => p.id === pedidoId);
+            if (!pedido) return;
+
+            // Garante que os itens foram carregados
+            if (!pedido.itens || pedido.itens.length === 0) {
+                pedido.itens = await apiFetch(`/api/orders/my/${pedidoId}`);
+            }
+
+            document.getElementById('modal-titulo').textContent = `Pedido #${pedido.id}`;
+            document.getElementById('modal-data').textContent =
+                `Em ${new Date(pedido.criado_em).toLocaleString('pt-BR')}`;
+
+            const etapasLista = [
+                { label: 'Análise', desc: 'Loja analisando o pedido' },
+                { label: 'Preparação', desc: 'Preparando seu pedido' },
+                { label: 'Entrega', desc: pedido.modalidade === 'retirada' ? 'Pronto para retirada' : 'Pedido a caminho' },
+            ];
+
+            const statusIdx = { pendente: 0, confirmado: 1, entregue: 2, cancelado: -1 };
+            const atual = statusIdx[pedido.status] ?? 0;
+
+            document.getElementById('modal-progresso').innerHTML = etapasLista.map((e, i) => `
+      <div class="etapa ${i <= atual ? 'ativa' : ''}">
+        <div class="etapa-dot"></div>
+        <div class="etapa-info">
+          <strong>${e.label}</strong>
+          <span>${e.desc}</span>
+        </div>
+      </div>
+    `).join('');
+
+            document.getElementById('modal-entrega').textContent =
+                pedido.modalidade === 'retirada' ? '🏪 Retirada na loja' : `🛵 Entrega — ${pedido.endereco_entrega}`;
+
+            const pagMap = { debito: '💳 Cartão Débito', credito: '💳 Cartão Crédito', dinheiro: '💵 Dinheiro' };
+            document.getElementById('modal-pagamento').textContent = pagMap[pedido.pagamento] || pedido.pagamento || '—';
+            document.getElementById('modal-total').textContent = `R$ ${parseFloat(pedido.total).toFixed(2)}`;
+
+            document.getElementById('modal-itens').innerHTML = pedido.itens.map(item => {
+                const produto = todosProdutos.find(p => p.id === item.produto_id);
+                return `
+        <div class="detalhe-item">
+          <img src="${produto?.imagem_url || ''}" alt="${item.produto_nome}">
+          <div style="flex:1;">
+            <div class="nome">${item.quantidade}x ${item.produto_nome}</div>
+            <div class="preco">R$ ${parseFloat(item.preco_unitario).toFixed(2)}</div>
+          </div>
+        </div>`;
+            }).join('');
+
+            document.getElementById('modal-detalhes').classList.add('aberto');
+        };
+
+        function fecharModal() {
+            document.getElementById('modal-detalhes').classList.remove('aberto');
+        }
+
+        async function pedirNovamente(pedidoId) {
+            try {
+                const pedido = todosPedidos.find(p => p.id === pedidoId);
+                const itens = pedido?.itens || await apiFetch(`/api/orders/my/${pedidoId}`);
+
+                itens.forEach(item => {
+                    const produto = todosProdutos.find(p => p.id === item.produto_id);
+                    if (produto) {
+                        let carrinho = getCarrinho();
+                        const index = carrinho.findIndex(c => c.id === produto.id);
+                        if (index !== -1) {
+                            carrinho[index].quantidade += item.quantidade;
+                        } else {
+                            carrinho.push({ ...produto, quantidade: item.quantidade });
+                        }
+                        localStorage.setItem('carrinho', JSON.stringify(carrinho));
+                        atualizarContadorCarrinho();
+                    }
+                });
+
+                window.location.href = 'carrinho.html';
+            } catch (e) {
+                alert('Erro ao recriar pedido.');
+            }
+        }
+
+        carregarPedidos();
+    </script>
+
+</body>
+
+</html>

@@ -1,302 +1,336 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finalizar Pedido — Lanchonete Express</title>
-  <link rel="stylesheet" href="css/style.css">
-  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <style>
-    .pedido-container {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 0 16px;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Pedido — Lanchonete Express</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <style>
+        .pedido-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
 
-    .pedido-container h1 {
-      font-size: 1.5rem;
-      color: var(--laranja);
-      margin-bottom: 24px;
-    }
+        .pedido-container h1 {
+            font-size: 1.5rem;
+            color: var(--laranja);
+            margin-bottom: 24px;
+        }
 
-    .card {
-      background: var(--branco);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
+        .card {
+            background: var(--branco);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
 
-    .card h2 {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--texto);
-    }
+        .card h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--texto);
+        }
 
-    .resumo-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid var(--cinza-medio);
-      font-size: 0.9rem;
-    }
+        .resumo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--cinza-medio);
+            font-size: 0.9rem;
+        }
 
-    .resumo-total {
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--laranja);
-      margin-top: 12px;
-    }
+        .resumo-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--laranja);
+            margin-top: 12px;
+        }
 
-    .resumo-frete {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.95rem;
-      color: #666;
-      margin-top: 8px;
-    }
+        .resumo-frete {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: #666;
+            margin-top: 8px;
+        }
 
-    /* Modalidade */
-    .opcoes-modalidade {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+        /* Modalidade */
+        .opcoes-modalidade {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
 
-    .opcao-card {
-      border: 2px solid var(--cinza-medio);
-      border-radius: 10px;
-      padding: 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+        .opcao-card {
+            border: 2px solid var(--cinza-medio);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-    .opcao-card:hover { border-color: var(--laranja); }
+        .opcao-card:hover {
+            border-color: var(--laranja);
+        }
 
-    .opcao-card.selecionado {
-      border-color: var(--laranja);
-      background: var(--lightOrange, #FFF3E0);
-    }
+        .opcao-card.selecionado {
+            border-color: var(--laranja);
+            background: var(--lightOrange, #FFF3E0);
+        }
 
-    .opcao-card .icone { font-size: 1.8rem; margin-bottom: 6px; }
-    .opcao-card .titulo { font-weight: 600; font-size: 0.95rem; }
-    .opcao-card .subtitulo { font-size: 0.8rem; color: #999; margin-top: 2px; }
+        .opcao-card .icone {
+            font-size: 1.8rem;
+            margin-bottom: 6px;
+        }
 
-    /* Pagamento */
-    .opcoes-pagamento {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+        .opcao-card .titulo {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
 
-    /* QR Code */
-    .qrcode-container {
-      display: none;
-      text-align: center;
-      padding: 32px;
-    }
+        .opcao-card .subtitulo {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 2px;
+        }
 
-    .qrcode-container h2 { color: var(--verde); margin-bottom: 8px; }
-    .qrcode-container p { color: #666; margin-bottom: 24px; font-size: 0.9rem; }
+        /* Pagamento */
+        .opcoes-pagamento {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
 
-    #qrcode { display: inline-block; margin-bottom: 24px; }
+        /* QR Code */
+        .qrcode-container {
+            display: none;
+            text-align: center;
+            padding: 32px;
+        }
 
-    @media (max-width: 600px) {
-      .pedido-container { margin: 20px auto; }
-      .opcoes-modalidade,
-      .opcoes-pagamento { grid-template-columns: 1fr; }
-    }
-  </style>
+        .qrcode-container h2 {
+            color: var(--verde);
+            margin-bottom: 8px;
+        }
+
+        .qrcode-container p {
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+        }
+
+        #qrcode {
+            display: inline-block;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .pedido-container {
+                margin: 20px auto;
+            }
+
+            .opcoes-modalidade,
+            .opcoes-pagamento {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<header>
-  <a href="index.html" class="logo">🍔 Lanchonete Express</a>
-  <nav>
-    <a href="index.html">Cardápio</a>
-    <a href="login.html" id="nav-login">Entrar</a>
-    <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
-    <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
-    <a href="carrinho.html" class="carrinho-icon">
-      🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
-    </a>
-  </nav>
-</header>
+    <header>
+        <a href="index.html" class="logo">🍔 Lanchonete Express</a>
+        <nav>
+            <a href="index.html">Cardápio</a>
+            <a href="meus-pedidos.html" id="nav-pedidos" style="display:none;">Meus Pedidos</a>
+            <a href="login.html" id="nav-login">Entrar</a>
+            <a href="cadastro.html" id="nav-cadastro">Cadastrar</a>
+            <a href="#" id="nav-logout" style="display:none;" onclick="logout()">Sair</a>
+            <a href="carrinho.html" class="carrinho-icon">
+                🛒 <span class="carrinho-contador" id="contador-carrinho">0</span>
+            </a>
+        </nav>
+    </header>
 
-<main>
-  <div class="pedido-container">
-    <h1>Finalizar Pedido</h1>
-    <div id="mensagem"></div>
+    <main>
+        <div class="pedido-container">
+            <h1>Finalizar Pedido</h1>
+            <div id="mensagem"></div>
 
-    <div id="form-pedido">
+            <div id="form-pedido">
 
-      <!-- Resumo -->
-      <div class="card">
-        <h2>📋 Resumo do pedido</h2>
-        <div id="resumo-itens"></div>
-      </div>
+                <!-- Resumo -->
+                <div class="card">
+                    <h2>📋 Resumo do pedido</h2>
+                    <div id="resumo-itens"></div>
+                </div>
 
-      <!-- Modalidade -->
-      <div class="card">
-        <h2>🚀 Como quer receber?</h2>
-        <div class="opcoes-modalidade">
-          <div class="opcao-card selecionado" id="opcao-entrega" onclick="selecionarModalidade('entrega')">
-            <div class="icone">🛵</div>
-            <div class="titulo">Entrega</div>
-            <div class="subtitulo">Taxa: R$ 5,00</div>
-          </div>
-          <div class="opcao-card" id="opcao-retirada" onclick="selecionarModalidade('retirada')">
-            <div class="icone">🏪</div>
-            <div class="titulo">Retirada na loja</div>
-            <div class="subtitulo">Sem taxa</div>
-          </div>
-        </div>
+                <!-- Modalidade -->
+                <div class="card">
+                    <h2>🚀 Como quer receber?</h2>
+                    <div class="opcoes-modalidade">
+                        <div class="opcao-card selecionado" id="opcao-entrega"
+                            onclick="selecionarModalidade('entrega')">
+                            <div class="icone">🛵</div>
+                            <div class="titulo">Entrega</div>
+                            <div class="subtitulo">Taxa: R$ 5,00</div>
+                        </div>
+                        <div class="opcao-card" id="opcao-retirada" onclick="selecionarModalidade('retirada')">
+                            <div class="icone">🏪</div>
+                            <div class="titulo">Retirada na loja</div>
+                            <div class="subtitulo">Sem taxa</div>
+                        </div>
+                    </div>
 
-        <!-- Endereço (só aparece se entrega) -->
-        <div id="campo-endereco">
-          <div class="input-group">
-            <label>Endereço de entrega</label>
-            <textarea id="endereco" rows="3" placeholder="Rua, número, bairro, cidade"></textarea>
-          </div>
-        </div>
-      </div>
+                    <!-- Endereço (só aparece se entrega) -->
+                    <div id="campo-endereco">
+                        <div class="input-group">
+                            <label>Endereço de entrega</label>
+                            <textarea id="endereco" rows="3" placeholder="Rua, número, bairro, cidade"></textarea>
+                        </div>
+                    </div>
+                </div>
 
-      <!-- Pagamento -->
-      <div class="card">
-        <h2>💳 Forma de pagamento</h2>
-        <div class="opcoes-pagamento">
-          <div class="opcao-card" id="opcao-cartao-debito" onclick="selecionarPagamento('debito')">
-            <div class="icone">💳</div>
-            <div class="titulo">Débito</div>
-          </div>
-          <div class="opcao-card" id="opcao-cartao-credito" onclick="selecionarPagamento('credito')">
-            <div class="icone">💳</div>
-            <div class="titulo">Crédito</div>
-          </div>
-          <div class="opcao-card" id="opcao-dinheiro" onclick="selecionarPagamento('dinheiro')">
-            <div class="icone">💵</div>
-            <div class="titulo">Dinheiro</div>
-          </div>
-        </div>
+                <!-- Pagamento -->
+                <div class="card">
+                    <h2>💳 Forma de pagamento</h2>
+                    <div class="opcoes-pagamento">
+                        <div class="opcao-card" id="opcao-cartao-debito" onclick="selecionarPagamento('debito')">
+                            <div class="icone">💳</div>
+                            <div class="titulo">Débito</div>
+                        </div>
+                        <div class="opcao-card" id="opcao-cartao-credito" onclick="selecionarPagamento('credito')">
+                            <div class="icone">💳</div>
+                            <div class="titulo">Crédito</div>
+                        </div>
+                        <div class="opcao-card" id="opcao-dinheiro" onclick="selecionarPagamento('dinheiro')">
+                            <div class="icone">💵</div>
+                            <div class="titulo">Dinheiro</div>
+                        </div>
+                    </div>
 
-        <!-- Troco (só aparece se dinheiro) -->
-        <div id="campo-troco" style="display:none;">
-          <div class="input-group">
-            <label>Precisa de troco?</label>
-            <select id="precisa-troco" onchange="mostrarTroco()">
-              <option value="nao">Não preciso de troco</option>
-              <option value="sim">Sim, preciso de troco</option>
-            </select>
-          </div>
-          <div id="valor-troco" style="display:none;">
-            <div class="input-group">
-              <label>Troco para quanto?</label>
-              <input type="number" id="troco" placeholder="Ex: 50.00" step="0.01">
+                    <!-- Troco (só aparece se dinheiro) -->
+                    <div id="campo-troco" style="display:none;">
+                        <div class="input-group">
+                            <label>Precisa de troco?</label>
+                            <select id="precisa-troco" onchange="mostrarTroco()">
+                                <option value="nao">Não preciso de troco</option>
+                                <option value="sim">Sim, preciso de troco</option>
+                            </select>
+                        </div>
+                        <div id="valor-troco" style="display:none;">
+                            <div class="input-group">
+                                <label>Troco para quanto?</label>
+                                <input type="number" id="troco" placeholder="Ex: 50.00" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Observações -->
+                <div class="card">
+                    <h2>📝 Observações</h2>
+                    <div class="input-group">
+                        <textarea id="observacao" rows="2" placeholder="Ex: Sem cebola, portão azul..."></textarea>
+                    </div>
+                </div>
+
+                <button class="btn btn-verde" style="width:100%;" onclick="finalizarPedido()">
+                    Confirmar Pedido
+                </button>
             </div>
-          </div>
+
+            <!-- QR Code -->
+            <div class="qrcode-container card" id="qrcode-container">
+                <h2>✅ Pedido confirmado!</h2>
+                <p>Escaneie o QR Code para enviar seu pedido pelo WhatsApp</p>
+                <div id="qrcode"></div>
+                <a id="whatsapp-link" href="#" target="_blank" class="btn btn-verde">
+                    📱 Abrir WhatsApp
+                </a>
+                <br><br>
+                <a href="index.html" class="btn btn-outline" style="margin-top:12px;">
+                    Voltar ao cardápio
+                </a>
+            </div>
         </div>
-      </div>
+    </main>
 
-      <!-- Observações -->
-      <div class="card">
-        <h2>📝 Observações</h2>
-        <div class="input-group">
-          <textarea id="observacao" rows="2" placeholder="Ex: Sem cebola, portão azul..."></textarea>
-        </div>
-      </div>
+    <footer>
+        <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
+        <p>📱 WhatsApp: (75) 98831-3141 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
+    </footer>
 
-      <button class="btn btn-verde" style="width:100%;" onclick="finalizarPedido()">
-        Confirmar Pedido
-      </button>
-    </div>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/carrinho.js"></script>
+    <script>
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
 
-    <!-- QR Code -->
-    <div class="qrcode-container card" id="qrcode-container">
-      <h2>✅ Pedido confirmado!</h2>
-      <p>Escaneie o QR Code para enviar seu pedido pelo WhatsApp</p>
-      <div id="qrcode"></div>
-      <a id="whatsapp-link" href="#" target="_blank" class="btn btn-verde">
-        📱 Abrir WhatsApp
-      </a>
-      <br><br>
-      <a href="index.html" class="btn btn-outline" style="margin-top:12px;">
-        Voltar ao cardápio
-      </a>
-    </div>
-  </div>
-</main>
+        const FRETE = 5.00;
+        let modalidadeSelecionada = 'entrega';
+        let pagamentoSelecionado = null;
 
-<footer>
-  <p>🍔 <span>Lanchonete Express</span> — Todos os direitos reservados</p>
-  <p>📱 WhatsApp: (75) 98831-3141 &nbsp;|&nbsp; 📍 Rua das Delícias, 123</p>
-</footer>
+        function selecionarModalidade(tipo) {
+            modalidadeSelecionada = tipo;
 
-<script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/carrinho.js"></script>
-<script>
-  if (!localStorage.getItem('token')) {
-    window.location.href = 'login.html';
-  }
+            document.getElementById('opcao-entrega').classList.toggle('selecionado', tipo === 'entrega');
+            document.getElementById('opcao-retirada').classList.toggle('selecionado', tipo === 'retirada');
+            document.getElementById('campo-endereco').style.display = tipo === 'entrega' ? 'block' : 'none';
 
-  const FRETE = 5.00;
-  let modalidadeSelecionada = 'entrega';
-  let pagamentoSelecionado = null;
+            atualizarResumo();
+        }
 
-  function selecionarModalidade(tipo) {
-    modalidadeSelecionada = tipo;
+        function selecionarPagamento(tipo) {
+            pagamentoSelecionado = tipo;
 
-    document.getElementById('opcao-entrega').classList.toggle('selecionado', tipo === 'entrega');
-    document.getElementById('opcao-retirada').classList.toggle('selecionado', tipo === 'retirada');
-    document.getElementById('campo-endereco').style.display = tipo === 'entrega' ? 'block' : 'none';
+            ['debito', 'credito', 'dinheiro'].forEach(t => {
+                const el = document.getElementById(`opcao-cartao-${t}`) || document.getElementById(`opcao-${t}`);
+                if (el) el.classList.remove('selecionado');
+            });
 
-    atualizarResumo();
-  }
+            document.getElementById(`opcao-cartao-debito`).classList.toggle('selecionado', tipo === 'debito');
+            document.getElementById(`opcao-cartao-credito`).classList.toggle('selecionado', tipo === 'credito');
+            document.getElementById(`opcao-dinheiro`).classList.toggle('selecionado', tipo === 'dinheiro');
 
-  function selecionarPagamento(tipo) {
-    pagamentoSelecionado = tipo;
+            document.getElementById('campo-troco').style.display = tipo === 'dinheiro' ? 'block' : 'none';
+        }
 
-    ['debito', 'credito', 'dinheiro'].forEach(t => {
-      const el = document.getElementById(`opcao-cartao-${t}`) || document.getElementById(`opcao-${t}`);
-      if (el) el.classList.remove('selecionado');
-    });
+        function mostrarTroco() {
+            const precisa = document.getElementById('precisa-troco').value;
+            document.getElementById('valor-troco').style.display = precisa === 'sim' ? 'block' : 'none';
+        }
 
-    document.getElementById(`opcao-cartao-debito`).classList.toggle('selecionado', tipo === 'debito');
-    document.getElementById(`opcao-cartao-credito`).classList.toggle('selecionado', tipo === 'credito');
-    document.getElementById(`opcao-dinheiro`).classList.toggle('selecionado', tipo === 'dinheiro');
+        function atualizarResumo() {
+            const carrinho = getCarrinho();
+            const container = document.getElementById('resumo-itens');
+            const frete = modalidadeSelecionada === 'entrega' ? FRETE : 0;
+            const subtotal = parseFloat(calcularTotal());
+            const total = (subtotal + frete).toFixed(2);
 
-    document.getElementById('campo-troco').style.display = tipo === 'dinheiro' ? 'block' : 'none';
-  }
-
-  function mostrarTroco() {
-    const precisa = document.getElementById('precisa-troco').value;
-    document.getElementById('valor-troco').style.display = precisa === 'sim' ? 'block' : 'none';
-  }
-
-  function atualizarResumo() {
-    const carrinho = getCarrinho();
-    const container = document.getElementById('resumo-itens');
-    const frete = modalidadeSelecionada === 'entrega' ? FRETE : 0;
-    const subtotal = parseFloat(calcularTotal());
-    const total = (subtotal + frete).toFixed(2);
-
-    const itensHTML = carrinho.map(item => {
-      const preco = item.preco_promocional || item.preco;
-      const subtotalItem = (parseFloat(preco) * item.quantidade).toFixed(2);
-      return `
+            const itensHTML = carrinho.map(item => {
+                const preco = item.preco_promocional || item.preco;
+                const subtotalItem = (parseFloat(preco) * item.quantidade).toFixed(2);
+                return `
         <div class="resumo-item">
           <span>${item.nome} x${item.quantidade}</span>
           <span>R$ ${subtotalItem}</span>
         </div>`;
-    }).join('');
+            }).join('');
 
-    container.innerHTML = itensHTML + `
+            container.innerHTML = itensHTML + `
       <div class="resumo-frete">
         <span>${modalidadeSelecionada === 'entrega' ? '🛵 Taxa de entrega' : '🏪 Retirada na loja'}</span>
         <span>${modalidadeSelecionada === 'entrega' ? `R$ ${FRETE.toFixed(2)}` : 'Grátis'}</span>
@@ -305,104 +339,104 @@
         <span>Total</span>
         <span>R$ ${total}</span>
       </div>`;
-  }
+        }
 
-  async function carregarPerfil() {
-    try {
-      const perfil = await apiFetch('/api/users/profile');
-      if (perfil.rua) {
-        document.getElementById('endereco').value =
-          `${perfil.rua}, ${perfil.numero} — ${perfil.bairro}, ${perfil.cidade} - ${perfil.estado}`;
-      }
-    } catch (e) {}
-  }
+        async function carregarPerfil() {
+            try {
+                const perfil = await apiFetch('/api/users/profile');
+                if (perfil.rua) {
+                    document.getElementById('endereco').value =
+                        `${perfil.rua}, ${perfil.numero} — ${perfil.bairro}, ${perfil.cidade} - ${perfil.estado}`;
+                }
+            } catch (e) { }
+        }
 
-  async function finalizarPedido() {
-    const mensagem = document.getElementById('mensagem');
-    const endereco = document.getElementById('endereco').value;
-    const observacao = document.getElementById('observacao').value;
-    const carrinho = getCarrinho();
-    const frete = modalidadeSelecionada === 'entrega' ? FRETE : 0;
-    const total = (parseFloat(calcularTotal()) + frete).toFixed(2);
+        async function finalizarPedido() {
+            const mensagem = document.getElementById('mensagem');
+            const endereco = document.getElementById('endereco').value;
+            const observacao = document.getElementById('observacao').value;
+            const carrinho = getCarrinho();
+            const frete = modalidadeSelecionada === 'entrega' ? FRETE : 0;
+            const total = (parseFloat(calcularTotal()) + frete).toFixed(2);
 
-    if (modalidadeSelecionada === 'entrega' && !endereco) {
-      mensagem.innerHTML = '<div class="mensagem-erro">Informe o endereço de entrega!</div>';
-      return;
-    }
+            if (modalidadeSelecionada === 'entrega' && !endereco) {
+                mensagem.innerHTML = '<div class="mensagem-erro">Informe o endereço de entrega!</div>';
+                return;
+            }
 
-    if (!pagamentoSelecionado) {
-      mensagem.innerHTML = '<div class="mensagem-erro">Selecione a forma de pagamento!</div>';
-      return;
-    }
+            if (!pagamentoSelecionado) {
+                mensagem.innerHTML = '<div class="mensagem-erro">Selecione a forma de pagamento!</div>';
+                return;
+            }
 
-    let troco = null;
-    if (pagamentoSelecionado === 'dinheiro') {
-      const precisaTroco = document.getElementById('precisa-troco').value;
-      if (precisaTroco === 'sim') {
-        troco = document.getElementById('troco').value;
-      }
-    }
+            let troco = null;
+            if (pagamentoSelecionado === 'dinheiro') {
+                const precisaTroco = document.getElementById('precisa-troco').value;
+                if (precisaTroco === 'sim') {
+                    troco = document.getElementById('troco').value;
+                }
+            }
 
-    const itens = carrinho.map(item => ({
-      produto_id: item.id,
-      quantidade: item.quantidade,
-      preco_unitario: item.preco_promocional || item.preco,
-    }));
+            const itens = carrinho.map(item => ({
+                produto_id: item.id,
+                quantidade: item.quantidade,
+                preco_unitario: item.preco_promocional || item.preco,
+            }));
 
-    try {
-      const resposta = await apiFetch('/api/orders', {
-        method: 'POST',
-        body: JSON.stringify({
-          total,
-          endereco_entrega: modalidadeSelecionada === 'entrega' ? endereco : 'Retirada na loja',
-          observacao,
-          itens,
-          modalidade: modalidadeSelecionada,
-          frete,
-          pagamento: pagamentoSelecionado,
-          troco,
-        }),
-      });
+            try {
+                const resposta = await apiFetch('/api/orders', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        total,
+                        endereco_entrega: modalidadeSelecionada === 'entrega' ? endereco : 'Retirada na loja',
+                        observacao,
+                        itens,
+                        modalidade: modalidadeSelecionada,
+                        frete,
+                        pagamento: pagamentoSelecionado,
+                        troco,
+                    }),
+                });
 
-      const link = gerarLinkWhatsApp(carrinho, total, endereco, observacao, frete, resposta.pedidoId);
+                const link = gerarLinkWhatsApp(carrinho, total, endereco, observacao, frete, resposta.pedidoId);
 
-      document.getElementById('form-pedido').style.display = 'none';
-      const qrcodeContainer = document.getElementById('qrcode-container');
-      qrcodeContainer.style.display = 'block';
-      document.getElementById('whatsapp-link').href = link;
+                document.getElementById('form-pedido').style.display = 'none';
+                const qrcodeContainer = document.getElementById('qrcode-container');
+                qrcodeContainer.style.display = 'block';
+                document.getElementById('whatsapp-link').href = link;
 
-      QRCode.toDataURL(link, { width: 250 }, function(err, url) {
-        const img = document.createElement('img');
-        img.src = url;
-        img.style.width = '250px';
-        document.getElementById('qrcode').appendChild(img);
-      });
+                QRCode.toDataURL(link, { width: 250 }, function (err, url) {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.style.width = '250px';
+                    document.getElementById('qrcode').appendChild(img);
+                });
 
-      limparCarrinho();
+                limparCarrinho();
 
-    } catch (error) {
-      mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
-    }
-  }
+            } catch (error) {
+                mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
+            }
+        }
 
-  function gerarLinkWhatsApp(carrinho, total, endereco, observacao, frete, pedidoId) {
-    const telefone = '5575988313141';
+        function gerarLinkWhatsApp(carrinho, total, endereco, observacao, frete, pedidoId) {
+            const telefone = '5575988313141';
 
-    const itens = carrinho.map(item =>
-      `  ➡ ${item.quantidade}x ${item.nome}`
-    ).join('\n');
+            const itens = carrinho.map(item =>
+                `  ➡ ${item.quantidade}x ${item.nome}`
+            ).join('\n');
 
-    const emojPagamento = pagamentoSelecionado === 'dinheiro' ? '💵 Dinheiro' : `💳 Cartão ${pagamentoSelecionado === 'debito' ? 'Débito' : 'Crédito'}`;
+            const emojPagamento = pagamentoSelecionado === 'dinheiro' ? '💵 Dinheiro' : `💳 Cartão ${pagamentoSelecionado === 'debito' ? 'Débito' : 'Crédito'}`;
 
-    const entregaInfo = modalidadeSelecionada === 'entrega'
-      ? `🛵 Delivery (taxa de: R$ ${frete.toFixed(2)})\n🏠 ${endereco}`
-      : `🏪 Retirada na loja`;
+            const entregaInfo = modalidadeSelecionada === 'entrega'
+                ? `🛵 Delivery (taxa de: R$ ${frete.toFixed(2)})\n🏠 ${endereco}`
+                : `🏪 Retirada na loja`;
 
-    const trocoInfo = pagamentoSelecionado === 'dinheiro' && document.getElementById('precisa-troco').value === 'sim'
-      ? `\nTroco para: R$ ${document.getElementById('troco').value}`
-      : '';
+            const trocoInfo = pagamentoSelecionado === 'dinheiro' && document.getElementById('precisa-troco').value === 'sim'
+                ? `\nTroco para: R$ ${document.getElementById('troco').value}`
+                : '';
 
-    const mensagem = `Pedido nº ${pedidoId}
+            const mensagem = `Pedido nº ${pedidoId}
 
 *Itens:*
 ${itens}
@@ -417,17 +451,22 @@ ${entregaInfo}
 
 Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
-    return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
-  }
+            return `https://wa.me/${telefone}?text=${encodeURIComponent(mensagem)}`;
+        }
 
-  // Inicializar
-  if (getCarrinho().length === 0) {
-    window.location.href = 'carrinho.html';
-  }
+        // Inicializar
+        if (getCarrinho().length === 0) {
+            window.location.href = 'carrinho.html';
+        }
 
-  atualizarResumo();
-  carregarPerfil();
-</script>
+        atualizarResumo();
+        carregarPerfil();
+        const navPedidos = document.getElementById('nav-pedidos');
+        if (localStorage.getItem('token') && navPedidos) {
+            navPedidos.style.display = 'inline';
+        }
+    </script>
 
 </body>
+
 </html>

@@ -339,3 +339,44 @@ footer span {
     grid-template-columns: 1fr;
   }
 }
+/* ── MEUS PEDIDOS ── */
+.pedido-card {
+  background: var(--branco);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.pedido-card-info h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.pedido-card-info p {
+  font-size: 0.82rem;
+  color: #999;
+}
+
+.pedido-card-acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.badge-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-pendente   { background: #FFF3E0; color: #E65100; }
+.badge-confirmado { background: #E3F2FD; color: #1565C0; }
+.badge-entregue   { background: #E8F5E9; color: #2E7D32; }
+.badge-cancelado  { background: #FFEBEE; color: #C62828; }

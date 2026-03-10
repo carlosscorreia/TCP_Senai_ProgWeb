@@ -53,4 +53,13 @@ const updateStatus = async (req, res) => {
   }
 };
 
-module.exports = { create, getMeusPedidos, getAll, getById, updateStatus };
+const getItensPedidoUsuario = async (req, res) => {
+  try {
+    const [itens] = await orderModel.getById(req.params.id);
+    res.json(itens);
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar itens do pedido' });
+  }
+};
+
+module.exports = { create, getMeusPedidos, getAll, getById, updateStatus, getItensPedidoUsuario };
