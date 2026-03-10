@@ -2,10 +2,13 @@ const orderModel = require('../models/orderModel');
 
 const create = async (req, res) => {
   try {
-    const { total, endereco_entrega, observacao, itens } = req.body;
+    const { total, endereco_entrega, observacao, itens, modalidade, frete, pagamento, troco } = req.body;
     const usuarioId = req.usuario.id;
 
-    const pedidoId = await orderModel.create(usuarioId, total, endereco_entrega, observacao, itens);
+    const pedidoId = await orderModel.create(
+      usuarioId, total, endereco_entrega, observacao,
+      itens, modalidade, frete, pagamento, troco
+    );
 
     res.status(201).json({ mensagem: 'Pedido criado com sucesso!', pedidoId });
   } catch (error) {

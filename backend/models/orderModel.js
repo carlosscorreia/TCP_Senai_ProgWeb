@@ -1,13 +1,13 @@
 const db = require('../config/db');
 
-const create = async (usuarioId, total, enderecoEntrega, observacao, itens) => {
+const create = async (usuarioId, total, enderecoEntrega, observacao, itens, modalidade, frete, pagamento, troco) => {
   const connection = await db.getConnection();
   try {
     await connection.beginTransaction();
 
     const [result] = await connection.query(
-      'INSERT INTO pedidos (usuario_id, total, endereco_entrega, observacao) VALUES (?, ?, ?, ?)',
-      [usuarioId, total, enderecoEntrega, observacao]
+      'INSERT INTO pedidos (usuario_id, total, endereco_entrega, observacao, modalidade, frete, pagamento, troco) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [usuarioId, total, enderecoEntrega, observacao, modalidade, frete, pagamento, troco]
     );
 
     const pedidoId = result.insertId;
