@@ -64,9 +64,80 @@
       width: 100%;
     }
 
-    .conteudo h1 {
-      font-size: 1.5rem;
+    .topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .topo h1 { font-size: 1.5rem; }
+
+    .btn-fechar-dia {
+      background: #C62828;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-fechar-dia:hover { background: #B71C1C; }
+
+    .btn-abrir-dia {
+      background: var(--verde);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Filtros */
+    .filtros {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn-filtro {
+      padding: 7px 16px;
+      border: 2px solid var(--cinza-medio);
+      background: transparent;
+      border-radius: 20px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-filtro:hover,
+    .btn-filtro.ativo {
+      border-color: var(--laranja);
+      color: var(--laranja);
+      background: #FFF3E0;
+    }
+
+    /* Banner loja fechada */
+    .banner-fechado {
+      display: none;
+      background: #FFEBEE;
+      border: 2px solid #C62828;
+      border-radius: 10px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      color: #C62828;
+      font-weight: 600;
+      font-size: 0.95rem;
     }
 
     table {
@@ -95,6 +166,15 @@
 
     tr:last-child td { border-bottom: none; }
 
+    select.status-select {
+      padding: 6px 10px;
+      border: 1px solid var(--cinza-medio);
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
     .badge {
       padding: 4px 10px;
       border-radius: 20px;
@@ -106,15 +186,6 @@
     .badge-confirmado { background: #E3F2FD; color: #1565C0; }
     .badge-entregue   { background: #E8F5E9; color: #2E7D32; }
     .badge-cancelado  { background: #FFEBEE; color: #C62828; }
-
-    select.status-select {
-      padding: 6px 10px;
-      border: 1px solid var(--cinza-medio);
-      border-radius: 6px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
 
     @media (max-width: 768px) {
       .sidebar { display: none; }
@@ -137,7 +208,25 @@
 </aside>
 
 <div class="conteudo">
-  <h1>📋 Pedidos</h1>
+  <div class="topo">
+    <h1>📋 Pedidos</h1>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <span id="status-loja" style="font-size:0.9rem; color:#666;"></span>
+      <button id="btn-toggle-loja" class="btn-fechar-dia" onclick="toggleLoja()">🔴 Fechar loja</button>
+    </div>
+  </div>
+
+  <div class="banner-fechado" id="banner-fechado">
+    🔴 Loja fechada — novos pedidos estão bloqueados para os clientes.
+  </div>
+
+  <div class="filtros">
+    <button class="btn-filtro ativo" onclick="filtrar('todos', event)">Todos</button>
+    <button class="btn-filtro" onclick="filtrar('pendente', event)">⏳ Pendente</button>
+    <button class="btn-filtro" onclick="filtrar('confirmado', event)">✅ Confirmado</button>
+    <button class="btn-filtro" onclick="filtrar('entregue', event)">🎉 Entregue</button>
+    <button class="btn-filtro" onclick="filtrar('cancelado', event)">❌ Cancelado</button>
+  </div>
 
   <table>
     <thead>
@@ -145,13 +234,14 @@
         <th>#</th>
         <th>Cliente</th>
         <th>Total</th>
-        <th>Endereço</th>
+        <th>Modalidade</th>
+        <th>Pagamento</th>
         <th>Data</th>
         <th>Status</th>
       </tr>
     </thead>
     <tbody id="tabela-body">
-      <tr><td colspan="6">Carregando...</td></tr>
+      <tr><td colspan="7">Carregando...</td></tr>
     </tbody>
   </table>
 </div>
@@ -181,36 +271,56 @@
     return data;
   }
 
+  let todosPedidos = [];
+  let filtroAtual = 'todos';
+
   async function carregarPedidos() {
     try {
-      const pedidos = await adminFetch('/api/orders');
-      const tbody = document.getElementById('tabela-body');
-
-      if (pedidos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6">Nenhum pedido realizado ainda.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = pedidos.map(p => `
-        <tr>
-          <td><strong>#${p.id}</strong></td>
-          <td>${p.cliente}</td>
-          <td>R$ ${parseFloat(p.total).toFixed(2)}</td>
-          <td style="max-width:200px; font-size:0.8rem;">${p.endereco_entrega}</td>
-          <td>${new Date(p.criado_em).toLocaleString('pt-BR')}</td>
-          <td>
-            <select class="status-select" onchange="atualizarStatus(${p.id}, this.value)">
-              <option value="pendente"   ${p.status === 'pendente'   ? 'selected' : ''}>⏳ Pendente</option>
-              <option value="confirmado" ${p.status === 'confirmado' ? 'selected' : ''}>✅ Confirmado</option>
-              <option value="entregue"   ${p.status === 'entregue'   ? 'selected' : ''}>🎉 Entregue</option>
-              <option value="cancelado"  ${p.status === 'cancelado'  ? 'selected' : ''}>❌ Cancelado</option>
-            </select>
-          </td>
-        </tr>
-      `).join('');
+      todosPedidos = await adminFetch('/api/orders');
+      renderizarTabela();
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function renderizarTabela() {
+    const tbody = document.getElementById('tabela-body');
+    const lista = filtroAtual === 'todos'
+      ? todosPedidos
+      : todosPedidos.filter(p => p.status === filtroAtual);
+
+    if (lista.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#999; padding:24px;">Nenhum pedido encontrado.</td></tr>`;
+      return;
+    }
+
+    const pagMap = { debito: '💳 Débito', credito: '💳 Crédito', dinheiro: '💵 Dinheiro' };
+
+    tbody.innerHTML = lista.map(p => `
+      <tr>
+        <td><strong>#${p.id}</strong></td>
+        <td>${p.cliente}</td>
+        <td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+        <td>${p.modalidade === 'retirada' ? '🏪 Retirada' : '🛵 Entrega'}</td>
+        <td>${pagMap[p.pagamento] || p.pagamento || '—'}</td>
+        <td>${new Date(p.criado_em).toLocaleString('pt-BR')}</td>
+        <td>
+          <select class="status-select" onchange="atualizarStatus(${p.id}, this.value)">
+            <option value="pendente"   ${p.status === 'pendente'   ? 'selected' : ''}>⏳ Pendente</option>
+            <option value="confirmado" ${p.status === 'confirmado' ? 'selected' : ''}>✅ Confirmado</option>
+            <option value="entregue"   ${p.status === 'entregue'   ? 'selected' : ''}>🎉 Entregue</option>
+            <option value="cancelado"  ${p.status === 'cancelado'  ? 'selected' : ''}>❌ Cancelado</option>
+          </select>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function filtrar(status, event) {
+    filtroAtual = status;
+    document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('ativo'));
+    event.target.classList.add('ativo');
+    renderizarTabela();
   }
 
   async function atualizarStatus(id, status) {
@@ -219,12 +329,50 @@
         method: 'PUT',
         body: JSON.stringify({ status }),
       });
+      // Atualiza localmente
+      const pedido = todosPedidos.find(p => p.id === id);
+      if (pedido) pedido.status = status;
     } catch (error) {
       alert('Erro ao atualizar status: ' + error.message);
     }
   }
 
+  // Loja aberta/fechada
+  function verificarStatusLoja() {
+    const fechada = localStorage.getItem('lojaFechada') === 'true';
+    const banner = document.getElementById('banner-fechado');
+    const btn = document.getElementById('btn-toggle-loja');
+    const statusLabel = document.getElementById('status-loja');
+
+    if (fechada) {
+      banner.style.display = 'block';
+      btn.textContent = '🟢 Abrir loja';
+      btn.className = 'btn-abrir-dia';
+      statusLabel.textContent = '🔴 Loja fechada';
+    } else {
+      banner.style.display = 'none';
+      btn.textContent = '🔴 Fechar loja';
+      btn.className = 'btn-fechar-dia';
+      statusLabel.textContent = '🟢 Loja aberta';
+    }
+  }
+
+  function toggleLoja() {
+    const fechada = localStorage.getItem('lojaFechada') === 'true';
+    if (!fechada) {
+      if (!confirm('Tem certeza que deseja fechar a loja? Clientes não poderão fazer pedidos.')) return;
+      localStorage.setItem('lojaFechada', 'true');
+    } else {
+      localStorage.setItem('lojaFechada', 'false');
+    }
+    verificarStatusLoja();
+  }
+
+  verificarStatusLoja();
   carregarPedidos();
+
+  // Atualiza pedidos a cada 30 segundos
+  setInterval(carregarPedidos, 30000);
 </script>
 
 </body>
