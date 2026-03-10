@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedidos — Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    body { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 220px;
+      background: var(--escuro);
+      padding: 24px 0;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+    }
+
+    .sidebar .logo {
+      color: var(--laranja);
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 0 24px 24px;
+      border-bottom: 1px solid #333;
+      text-decoration: none;
+    }
+
+    .sidebar nav { margin-top: 16px; flex: 1; }
+
+    .sidebar nav a {
+      display: block;
+      color: #ccc;
+      text-decoration: none;
+      padding: 12px 24px;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.ativo {
+      background: #2a2a2a;
+      color: var(--laranja);
+    }
+
+    .sidebar .btn-sair {
+      padding: 12px 24px;
+      color: #999;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: none;
+      border: none;
+      text-align: left;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .sidebar .btn-sair:hover { color: #ff4444; }
+
+    .conteudo {
+      margin-left: 220px;
+      padding: 32px;
+      flex: 1;
+      width: 100%;
+    }
+
+    .conteudo h1 {
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--branco);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    th {
+      text-align: left;
+      padding: 12px 16px;
+      background: var(--cinza-claro);
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--cinza-medio);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-pendente   { background: #FFF3E0; color: #E65100; }
+    .badge-confirmado { background: #E3F2FD; color: #1565C0; }
+    .badge-entregue   { background: #E8F5E9; color: #2E7D32; }
+    .badge-cancelado  { background: #FFEBEE; color: #C62828; }
+
+    select.status-select {
+      padding: 6px 10px;
+      border: 1px solid var(--cinza-medio);
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .conteudo { margin-left: 0; padding: 16px; }
+      table { font-size: 0.8rem; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <a href="index.html" class="logo">🍔 Admin</a>
+  <nav>
+    <a href="index.html">📊 Dashboard</a>
+    <a href="produtos.html">🍔 Produtos</a>
+    <a href="pedidos.html" class="ativo">📋 Pedidos</a>
+  </nav>
+  <button class="btn-sair" onclick="sairAdmin()">🚪 Sair</button>
+</aside>
+
+<div class="conteudo">
+  <h1>📋 Pedidos</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Cliente</th>
+        <th>Total</th>
+        <th>Endereço</th>
+        <th>Data</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-body">
+      <tr><td colspan="6">Carregando...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  if (!localStorage.getItem('adminToken')) {
+    window.location.href = 'login.html';
+  }
+
+  function sairAdmin() {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminNome');
+    window.location.href = 'login.html';
+  }
+
+  async function adminFetch(rota, opcoes = {}) {
+    const token = localStorage.getItem('adminToken');
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...opcoes.headers,
+    };
+    const response = await fetch(`http://localhost:3000${rota}`, { ...opcoes, headers });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.erro || 'Erro');
+    return data;
+  }
+
+  async function carregarPedidos() {
+    try {
+      const pedidos = await adminFetch('/api/orders');
+      const tbody = document.getElementById('tabela-body');
+
+      if (pedidos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6">Nenhum pedido realizado ainda.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = pedidos.map(p => `
+        <tr>
+          <td><strong>#${p.id}</strong></td>
+          <td>${p.cliente}</td>
+          <td>R$ ${parseFloat(p.total).toFixed(2)}</td>
+          <td style="max-width:200px; font-size:0.8rem;">${p.endereco_entrega}</td>
+          <td>${new Date(p.criado_em).toLocaleString('pt-BR')}</td>
+          <td>
+            <select class="status-select" onchange="atualizarStatus(${p.id}, this.value)">
+              <option value="pendente"   ${p.status === 'pendente'   ? 'selected' : ''}>⏳ Pendente</option>
+              <option value="confirmado" ${p.status === 'confirmado' ? 'selected' : ''}>✅ Confirmado</option>
+              <option value="entregue"   ${p.status === 'entregue'   ? 'selected' : ''}>🎉 Entregue</option>
+              <option value="cancelado"  ${p.status === 'cancelado'  ? 'selected' : ''}>❌ Cancelado</option>
+            </select>
+          </td>
+        </tr>
+      `).join('');
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function atualizarStatus(id, status) {
+    try {
+      await adminFetch(`/api/orders/${id}/status`, {
+        method: 'PUT',
+        body: JSON.stringify({ status }),
+      });
+    } catch (error) {
+      alert('Erro ao atualizar status: ' + error.message);
+    }
+  }
+
+  carregarPedidos();
+</script>
+
+</body>
+</html>
