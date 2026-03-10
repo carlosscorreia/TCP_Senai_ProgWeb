@@ -143,6 +143,86 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .endereco-opcao {
+            border: 2px solid var(--cinza-medio);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .endereco-opcao:hover {
+            border-color: var(--laranja);
+        }
+
+        .endereco-opcao.selecionado {
+            border-color: var(--laranja);
+            background: #FFF3E0;
+        }
+
+        .endereco-opcao .apelido {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .endereco-opcao .detalhe {
+            font-size: 0.82rem;
+            color: #666;
+        }
+
+        .radio-circulo {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid var(--cinza-medio);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .endereco-opcao.selecionado .radio-circulo {
+            border-color: var(--laranja);
+            background: var(--laranja);
+        }
+
+        .radio-circulo::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: white;
+            display: none;
+        }
+
+        .endereco-opcao.selecionado .radio-circulo::after {
+            display: block;
+        }
+
+        .btn-add-endereco {
+            width: 100%;
+            padding: 12px;
+            border: 2px dashed var(--cinza-medio);
+            background: transparent;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-add-endereco:hover {
+            border-color: var(--laranja);
+            color: var(--laranja);
+        }
     </style>
 </head>
 
@@ -194,9 +274,48 @@
 
                     <!-- Endereço (só aparece se entrega) -->
                     <div id="campo-endereco">
-                        <div class="input-group">
-                            <label>Endereço de entrega</label>
-                            <textarea id="endereco" rows="3" placeholder="Rua, número, bairro, cidade"></textarea>
+                        <div id="lista-enderecos"></div>
+
+                        <div id="form-novo-endereco" style="display:none; margin-top:12px;">
+                            <div class="input-group">
+                                <label>Apelido (ex: Casa, Trabalho)</label>
+                                <input type="text" id="novo-apelido" placeholder="Casa">
+                            </div>
+                            <div class="input-group">
+                                <label>CEP</label>
+                                <input type="text" id="novo-cep" placeholder="00000-000"
+                                    oninput="if(this.value.replace(/\D/g,'').length===8) buscarCepNovo(this.value)">
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div class="input-group">
+                                    <label>Rua</label>
+                                    <input type="text" id="novo-rua" placeholder="Preenchido automaticamente">
+                                </div>
+                                <div class="input-group">
+                                    <label>Número</label>
+                                    <input type="text" id="novo-numero" placeholder="Ex: 123">
+                                </div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                                <div class="input-group">
+                                    <label>Bairro</label>
+                                    <input type="text" id="novo-bairro">
+                                </div>
+                                <div class="input-group">
+                                    <label>Cidade</label>
+                                    <input type="text" id="novo-cidade">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label>Estado</label>
+                                <input type="text" id="novo-estado" maxlength="2">
+                            </div>
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn btn-laranja" style="flex:1;" onclick="salvarNovoEndereco()">Salvar
+                                    endereço</button>
+                                <button class="btn btn-outline" style="flex:1;"
+                                    onclick="cancelarNovoEndereco()">Cancelar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -312,6 +431,111 @@
             const precisa = document.getElementById('precisa-troco').value;
             document.getElementById('valor-troco').style.display = precisa === 'sim' ? 'block' : 'none';
         }
+        let enderecos = [];
+        let enderecoSelecionadoIdx = 0;
+
+        async function carregarEnderecos() {
+            try {
+                const perfil = await apiFetch('/api/users/profile');
+
+                // Endereços salvos no localStorage
+                const extras = JSON.parse(localStorage.getItem('enderecos_extras') || '[]');
+
+                enderecos = [];
+
+                if (perfil.rua) {
+                    enderecos.push({
+                        apelido: 'Principal',
+                        texto: `${perfil.rua}, ${perfil.numero} — ${perfil.bairro}, ${perfil.cidade} - ${perfil.estado}`
+                    });
+                }
+
+                enderecos = enderecos.concat(extras);
+                renderizarEnderecos();
+            } catch (e) { }
+        }
+
+        function renderizarEnderecos() {
+            const lista = document.getElementById('lista-enderecos');
+
+            const opcoesHTML = enderecos.map((end, i) => `
+    <div class="endereco-opcao ${i === enderecoSelecionadoIdx ? 'selecionado' : ''}"
+         onclick="selecionarEndereco(${i})">
+      <div>
+        <div class="apelido">📍 ${end.apelido}</div>
+        <div class="detalhe">${end.texto}</div>
+      </div>
+      <div class="radio-circulo"></div>
+    </div>
+  `).join('');
+
+            lista.innerHTML = opcoesHTML + `
+    <button class="btn-add-endereco" onclick="mostrarFormNovoEndereco()">
+      + Adicionar novo endereço
+    </button>`;
+        }
+
+        function selecionarEndereco(idx) {
+            enderecoSelecionadoIdx = idx;
+            renderizarEnderecos();
+        }
+
+        function mostrarFormNovoEndereco() {
+            document.getElementById('form-novo-endereco').style.display = 'block';
+        }
+
+        function cancelarNovoEndereco() {
+            document.getElementById('form-novo-endereco').style.display = 'none';
+        }
+
+        async function buscarCepNovo(cep) {
+            cep = cep.replace(/[^0-9]/g, '');
+            if (cep.length !== 8) return;
+
+            try {
+                const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await res.json();
+
+                if (data.erro) {
+                    alert('CEP não encontrado!');
+                    return;
+                }
+
+                document.getElementById('novo-rua').value = data.logradouro || '';
+                document.getElementById('novo-bairro').value = data.bairro || '';
+                document.getElementById('novo-cidade').value = data.localidade || '';
+                document.getElementById('novo-estado').value = data.uf || '';
+                document.getElementById('novo-numero').focus();
+
+            } catch (e) {
+                alert('Erro ao buscar CEP. Verifique sua conexão.');
+            }
+        }
+
+        function salvarNovoEndereco() {
+            const apelido = document.getElementById('novo-apelido').value || 'Novo endereço';
+            const rua = document.getElementById('novo-rua').value;
+            const numero = document.getElementById('novo-numero').value;
+            const bairro = document.getElementById('novo-bairro').value;
+            const cidade = document.getElementById('novo-cidade').value;
+            const estado = document.getElementById('novo-estado').value;
+
+            if (!rua || !numero) {
+                alert('Preencha pelo menos a rua e o número!');
+                return;
+            }
+
+            const texto = `${rua}, ${numero} — ${bairro}, ${cidade} - ${estado}`;
+            const extras = JSON.parse(localStorage.getItem('enderecos_extras') || '[]');
+            extras.push({ apelido, texto });
+            localStorage.setItem('enderecos_extras', JSON.stringify(extras));
+
+            enderecos.push({ apelido, texto });
+            enderecoSelecionadoIdx = enderecos.length - 1;
+
+            document.getElementById('form-novo-endereco').style.display = 'none';
+            renderizarEnderecos();
+        }
 
         function atualizarResumo() {
             const carrinho = getCarrinho();
@@ -353,7 +577,7 @@
 
         async function finalizarPedido() {
             const mensagem = document.getElementById('mensagem');
-            const endereco = document.getElementById('endereco').value;
+            const endereco = enderecos[enderecoSelecionadoIdx]?.texto || '';
             const observacao = document.getElementById('observacao').value;
             const carrinho = getCarrinho();
             const frete = modalidadeSelecionada === 'entrega' ? FRETE : 0;
@@ -460,7 +684,7 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
         }
 
         atualizarResumo();
-        carregarPerfil();
+        carregarEnderecos();
         const navPedidos = document.getElementById('nav-pedidos');
         if (localStorage.getItem('token') && navPedidos) {
             navPedidos.style.display = 'inline';
