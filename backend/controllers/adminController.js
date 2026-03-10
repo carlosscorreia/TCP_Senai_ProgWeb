@@ -64,5 +64,27 @@ const dashboard = async (req, res) => {
     res.status(500).json({ erro: 'Erro ao buscar dados do dashboard' });
   }
 };
+const getLojaStatus = async (req, res) => {
+  try {
+    const [rows] = await db.query("SELECT valor FROM configuracoes WHERE chave = 'loja_aberta'");
+    const aberta = rows[0]?.valor === 'true';
+    res.json({ aberta });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao buscar status da loja' });
+  }
+};
 
-module.exports = { login, dashboard };
+const setLojaStatus = async (req, res) => {
+  try {
+    const { aberta } = req.body;
+    await db.query(
+      "UPDATE configuracoes SET valor = ? WHERE chave = 'loja_aberta'",
+      [aberta ? 'true' : 'false']
+    );
+    res.json({ mensagem: 'Status da loja atualizado!', aberta });
+  } catch (error) {
+    res.status(500).json({ erro: 'Erro ao atualizar status da loja' });
+  }
+};
+
+module.exports = { login, dashboard, getLojaStatus, setLojaStatus };

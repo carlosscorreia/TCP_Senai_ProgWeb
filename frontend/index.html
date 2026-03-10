@@ -165,6 +165,21 @@
     if (localStorage.getItem('token') && navPedidos) {
       navPedidos.style.display = 'inline';
     }
+    async function verificarLojaAberta() {
+      try {
+        const dados = await apiFetch('/api/admin/loja-status');
+        if (!dados.aberta) {
+          document.querySelector('main').innerHTML = `
+        <div style="text-align:center; padding: 80px 20px;">
+          <div style="font-size:4rem;">🔴</div>
+          <h2 style="font-size:1.5rem; margin: 16px 0 8px;">Loja fechada</h2>
+          <p style="color:#999; font-size:1rem;">Estamos fora do horário de atendimento.<br>Volte mais tarde! 😊</p>
+        </div>`;
+        }
+      } catch (e) { }
+    }
+
+    verificarLojaAberta();
   </script>
 
 </body>
