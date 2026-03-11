@@ -119,6 +119,7 @@
 
         .qrcode-container h2 {
             color: var(--verde);
+            font-size: 1.4rem;
             margin-bottom: 8px;
         }
 
@@ -129,8 +130,15 @@
         }
 
         #qrcode {
-            display: inline-block;
+            display: flex;
+            justify-content: center;
             margin-bottom: 24px;
+        }
+
+        #qrcode img {
+            border: 8px solid white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
         }
 
         @media (max-width: 600px) {
@@ -371,16 +379,18 @@
 
             <!-- QR Code -->
             <div class="qrcode-container card" id="qrcode-container">
-                <h2>✅ Pedido confirmado!</h2>
-                <p>Escaneie o QR Code para enviar seu pedido pelo WhatsApp</p>
+                <div style="font-size:3rem; margin-bottom:8px;">✅</div>
+                <h2>Pedido confirmado!</h2>
+                <p>Escaneie o QR Code abaixo para enviar seu pedido pelo WhatsApp</p>
                 <div id="qrcode"></div>
-                <a id="whatsapp-link" href="#" target="_blank" class="btn btn-verde">
-                    📱 Abrir WhatsApp
-                </a>
-                <br><br>
-                <a href="index.html" class="btn btn-outline" style="margin-top:12px;">
-                    Voltar ao cardápio
-                </a>
+                <div style="display:flex; flex-direction:column; gap:12px; max-width:300px; margin:0 auto;">
+                    <a id="whatsapp-link" href="#" target="_blank" class="btn btn-verde" style="text-align:center;">
+                        📱 Abrir WhatsApp
+                    </a>
+                    <a href="index.html" class="btn btn-outline" style="text-align:center;">
+                        Voltar ao cardápio
+                    </a>
+                </div>
             </div>
         </div>
     </main>
