@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrar / Cadastrar</title>
+<link rel="stylesheet" href="styler.css">
+</head>
+
+<body>
+
+<div class="login-page">
+
+<div class="login-card">
+
+<!-- LADO ESQUERDO -->
+
+<div class="login-left">
+
+<h2>Bem-vindo!</h2>
+
+<p>
+Faça login para acessar seus pedidos<br>
+ou crie uma conta nova.
+</p>
+
+<button onclick="mostrarLogin()">ENTRAR</button>
+
+</div>
+
+<!-- LADO DIREITO -->
+
+<div class="login-right" id="form-area">
+
+<h2>Criar Conta</h2>
+
+<div class="input-group">
+<input type="text" placeholder="Nome completo">
+</div>
+
+<div class="input-group">
+<input type="email" placeholder="Email">
+</div>
+
+<div class="input-group">
+<input type="password" placeholder="Senha">
+</div>
+
+<button class="btn-login">CADASTRAR</button>
+
+<p class="link-opcao" onclick="mostrarLogin()">
+Já tem conta? Fazer login
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* TROCAR FORMULÁRIO */
+
+function mostrarLogin(){
+
+document.getElementById("form-area").innerHTML = `
+
+<h2>Entrar</h2>
+
+<div class="input-group">
+<input type="email" placeholder="Email">
+</div>
+
+<div class="input-group">
+<input type="password" placeholder="Senha">
+</div>
+
+<button class="btn-login">ENTRAR</button>
+
+<p class="link-opcao" onclick="mostrarCadastro()">
+Não tem conta? Criar cadastro
+</p>
+
+`
+
+}
+
+function mostrarCadastro(){
+
+document.getElementById("form-area").innerHTML = `
+
+<h2>Criar Conta</h2>
+
+<div class="input-group">
+<input type="text" placeholder="Nome completo">
+</div>
+
+<div class="input-group">
+<input type="email" placeholder="Email">
+</div>
+
+<div class="input-group">
+<input type="password" placeholder="Senha">
+</div>
+
+<button class="btn-login">CADASTRAR</button>
+
+<p class="link-opcao" onclick="mostrarLogin()">
+Já tem conta? Fazer login
+</p>
+
+`
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,730 @@
+
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+}
+body{
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+      
+
+}
+.nav-header{
+    background-color: #aa5e06;
+    padding: 2px;
+  
+   
+}
+.div-nav {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    gap: 7%;
+    padding:15px;
+    gap: 80px;
+}
+
+.link{
+    display: flex;
+    justify-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 800;
+    gap: 3px;
+    padding: 10px;
+
+}
+
+/*
+.link-adm{
+    display: flex;
+    justify-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    font-weight: 800;
+    gap: 3px;
+    padding: 10px;
+
+}
+
+.link-adm:hover{
+    border:1px solid white;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgb(0,0,0,0.2);
+}
+
+*/
+.link:hover{
+    border:1px solid white;
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgb(0,0,0,0.2);
+}
+.btn-menu{
+    text-align: center;
+    background-color:transparent;
+    color: white;
+    padding: 15px;
+    border: 0;
+    margin: 8px;
+    border-radius: 8px;
+}
+
+
+.topo{
+
+margin-top: -20px;
+margin-left:9%;
+display:flex;
+align-items:center;
+gap:20px;
+padding:30px;
+
+}
+.topo .categorias{
+    margin-top: 3%;
+    margin-left: 30%;
+   justify-content: flex-end;
+}
+.div-logo{
+  margin-top:  -40px;
+  background-color: #ccc;
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgb(0,0,0,0.3);
+}
+
+.logo{
+width:180px;
+border-radius:15px;
+
+}
+
+
+.info h1{
+font-size:32px;
+margin-top: 35px;
+}
+
+.status{
+color:green;
+margin-top:7px;
+}
+
+.container{
+display:flex;
+gap:20px;
+padding:30px;
+}
+
+.produtos{
+flex:3;
+}
+
+.carrinho{
+flex:1;
+}
+
+.categorias{
+
+padding:8px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:15px;
+margin-left: 9%;
+margin-top: 30px;
+color: #4d2a03;
+}
+.categorias option{
+    background-color: #f5e5d4;
+    border: #4d2a03;
+    font-weight: 500;
+}
+#carouselExampleIndicators{
+width:100%;
+max-width:950px;
+margin-top: 2%;
+margin-left: 25%;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0px 10px 25px rgba(70, 3, 3, 0.4);
+background-color: rgb(214, 214, 214);
+
+
+}
+.carousel-inner img{
+   padding: 15px;
+   height: 570px;
+
+}
+.cards h2{
+margin-left: 32%;
+margin-right: 32%;
+margin-top: 5%;
+font-family: 'Lucida Sans';
+text-align: center;
+font-size: 28px;
+background-color:#f7f6f6;
+box-shadow:0px 10px 25px rgba(0, 0, 0, 0.3);
+padding: 12px;
+color: #4d2a03;
+border-radius: 15px;
+}
+.cards{
+ 
+    background-image: url(img/fundo\ pizzas.png);
+    background-repeat:none; 
+    width: 100%;
+    padding: 1px;
+    margin-top: 25px;
+   
+     
+}
+
+.card{
+
+    box-shadow:0px 0px 25px rgba(0, 0, 0, 0.5);
+    transition: scale 0.1s ease;
+}
+
+.divs-pizza{
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    margin-top: 40px;
+    transition: scale 0.1s ease;
+   
+}
+
+.divs-pizza .card:hover {
+scale: 105%;
+background-color: #f1e4d5;
+color: black;
+}
+
+
+
+#btn-pedir{
+    background-color: #4d2a03;
+    border: none;
+}
+#btn-pedir:hover{
+background-color: black;
+}
+
+.cards-hamburguer{
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #854a07;
+    width: 100%;
+   
+}
+
+.cards-hamburguer h2{
+    margin-left: 32%;
+    margin-right: 32%;
+    margin-top: 3%;
+    font-family: 'Lucida Sans';
+    text-align: center;
+    font-size: 28px;
+    background-color: #f7f6f6;
+    box-shadow:0px 10px 25px rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    color: #4d2a03;
+    border-radius: 15px;
+}
+.divs-hamburguer{
+
+
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(3, 450px);
+    justify-content: center;
+    padding: 15px;
+   
+   
+}
+
+
+
+/*BATATA FRITA*/
+
+
+.cards-batata{
+    background-image: url(img/hamburger/Fundo\ Batata\ frita.png);
+    padding: 20px;
+    background-color: #f5d9c3ce;
+    width: 100%;
+   
+}
+
+.cards-batata h2{
+    margin-left: 32%;
+    margin-right: 32%;
+    margin-top: 3%;
+    margin-bottom: 35px;
+    font-family: 'Lucida Sans';
+    text-align: center;
+    font-size: 28px;
+    background-color:#f7f6f6;
+    box-shadow:0px 10px 25px rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    color: #4d2a03;
+    border-radius: 15px;
+}
+.divs-batata{
+
+
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(3, 450px);
+    justify-content: center;
+  
+    
+   
+}
+
+/*.divs-batata .card mb-3{
+  
+  transition-property: box-shadow, transform;
+  transition-duration: 350ms;
+  transition-timing-function: ease;
+
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.24);
+}
+*/
+/*peetiscos*/
+
+.cards-petisco{
+    
+    padding: 20px;
+    background: linear-gradient(15deg, #d89549 50%,  #613604 100%);
+    width: 100%;
+    
+}
+
+.cards-petisco h2{
+    margin-left: 32%;
+    margin-right: 32%;
+    margin-top: 3%;
+    margin-bottom: 35px;
+    font-family: 'Lucida Sans';
+    text-align: center;
+    font-size: 28px;
+    background-color:#f7f6f6;
+    box-shadow:0px 10px 25px rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    color: #4d2a03;
+    border-radius: 15px;
+}
+.divs-petisco{
+
+
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(3, 450px);
+    justify-content: center;
+    
+    
+   
+}
+
+/*sucos e refrigerante*/
+
+.cards-bebida h2{
+margin-left: 32%;
+margin-right: 32%;
+margin-top: 5%;
+font-family: 'Lucida Sans';
+text-align: center;
+font-size: 28px;
+background-color:#854203;
+box-shadow:0px 10px 25px rgba(0, 0, 0, 0.3);
+padding: 12px;
+color: #ffffff;
+border-radius: 15px;
+}
+.cards-bebida{
+   
+    background-image: url(img/fundo/Fundo\ sucos.png);
+    background-color: #442605;
+    background-repeat:none; 
+    width: 100%;
+    padding: 1px;
+    
+   
+     
+}
+
+.card-sucos{
+    
+    margin-bottom: 25px;
+   
+    
+}
+.divs-bebida{
+    display: flex;
+    gap: 50px;
+    justify-content: center;
+    margin-top: 40px;
+   
+}
+
+/*SOBREMESA*/
+
+
+.cards-sobremesa{
+
+    padding: 20px;
+    background-color: #f0eef0ce;
+    background-image: url(img/fundo/Fundo\ sobremesa\ \(2\).png);
+    width: 100%;
+   
+}
+
+.cards-sobremesa h2{
+    margin-left: 32%;
+    margin-right: 32%;
+    margin-top: 3%;
+    margin-bottom: 35px;
+    font-family: 'Lucida Sans';
+    text-align: center;
+    font-size: 28px;
+    background-color:#f7f6f6;
+    box-shadow:0px 10px 25px hsla(308, 96%, 45%, 0.302);
+    padding: 12px;
+    color: #a30288;
+    border-radius: 15px;
+}
+.divs-sobremesa{
+
+    display: grid;
+    gap: 30px;
+    grid-template-columns: repeat(3, 450px);
+    justify-content: center;
+    
+    
+   
+}
+
+.barra{
+    text-align: center;
+    padding: 45px;
+    font-weight: 600;
+    background: linear-gradient(45deg, #e481df 50%, #dd50d6 100%);
+    color: white;
+    box-shadow:0px 0px 15px rgba(0, 0, 0, 0.3);
+
+   
+}
+
+
+/*Rodapé*/
+
+footer{
+    background-color: #f8b467;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 60px;    
+}
+
+.rodape{
+    justify-content: right;
+}
+
+/* ============================= */
+/* RESPONSIVIDADE PARA CELULAR   */
+/* ============================= */
+
+@media (max-width:768px){
+
+/* NAV */
+.div-nav{
+flex-direction:column;
+gap:10px;
+}
+
+/* TOPO */
+.topo{
+flex-direction:column;
+align-items:center;
+margin-left:0;
+text-align:center;
+padding:20px;
+}
+
+.logo{
+width:130px;
+}
+
+/* SELECT CATEGORIAS */
+.categorias{
+margin-left:0;
+width:90%;
+margin-top:10px;
+}
+
+/* CARROSSEL */
+
+#carouselExampleIndicators{
+width:95%;
+margin:20px auto;
+}
+
+.carousel-inner img{
+height:auto;
+padding:5px;
+}
+
+/* TITULOS DAS SEÇÕES */
+
+.cards h2,
+.cards-hamburguer h2,
+.cards-batata h2,
+.cards-petisco h2,
+.cards-bebida h2,
+.cards-sobremesa h2{
+margin-left:10%;
+margin-right:10%;
+font-size:22px;
+}
+
+/* ============================= */
+/* GRID DOS CARDS                */
+/* ============================= */
+
+/* PIZZAS */
+
+.divs-pizza{
+display:grid;
+grid-template-columns: repeat(2,1fr);
+gap:15px;
+padding:15px;
+}
+
+/* HAMBURGUER */
+
+.divs-hamburguer{
+grid-template-columns: repeat(2,1fr);
+gap:15px;
+}
+
+/* BATATA */
+
+.divs-batata{
+grid-template-columns: repeat(2,1fr);
+gap:15px;
+}
+
+/* PETISCO */
+
+.divs-petisco{
+grid-template-columns: repeat(2,1fr);
+gap:15px;
+}
+
+/* BEBIDAS */
+
+.divs-bebida{
+display:grid;
+grid-template-columns: repeat(2,1fr);
+gap:15px;
+padding:15px;
+}
+
+/* SOBREMESA */
+
+.divs-sobremesa{
+grid-template-columns: repeat(2,1fr);
+gap:15px;
+}
+
+/* TAMANHO DOS CARDS */
+
+.card{
+width:100%;
+font-size:14px;
+margin-top: 0;
+}
+
+.card img{
+width:100%;
+height:140px;
+object-fit:cover;
+}
+
+/* BOTÃO */
+
+#btn-pedir{
+font-size:13px;
+padding:5px 10px;
+}
+
+/* FOOTER */
+
+footer{
+flex-direction:column;
+gap:15px;
+text-align:center;
+}
+
+}
+/* ===================================== */
+/* LOGIN / CADASTRO                      */
+/* ===================================== */
+
+.login-page{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+background:#f2f2f2;
+padding:20px;
+}
+
+.login-card{
+display:flex;
+width:900px;
+max-width:95%;
+background:white;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0px 10px 30px rgba(0,0,0,0.3);
+}
+
+/* LADO ESQUERDO */
+
+.login-left{
+flex:1;
+background:#aa5e06;
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:40px;
+text-align:center;
+}
+
+.login-left h2{
+font-size:34px;
+margin-bottom:10px;
+}
+
+.login-left p{
+margin-bottom:25px;
+font-size:15px;
+line-height:22px;
+}
+
+.login-left button{
+background:transparent;
+border:2px solid white;
+padding:10px 30px;
+border-radius:25px;
+color:white;
+font-weight:bold;
+cursor:pointer;
+transition:0.3s;
+}
+
+.login-left button:hover{
+background:white;
+color:#aa5e06;
+}
+
+/* LADO DIREITO */
+
+.login-right{
+flex:1;
+padding:40px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+text-align:center;
+}
+
+.login-right h2{
+color:#4d2a03;
+margin-bottom:20px;
+font-size:28px;
+}
+
+/* INPUTS */
+
+.input-group{
+margin-bottom:15px;
+}
+
+.input-group input{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:15px;
+outline:none;
+transition:0.2s;
+}
+
+.input-group input:focus{
+border:1px solid #aa5e06;
+box-shadow:0px 0px 5px rgba(170,94,6,0.4);
+}
+
+/* BOTÃO */
+
+.btn-login{
+background:#4d2a03;
+color:white;
+border:none;
+padding:12px;
+border-radius:25px;
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
+transition:0.3s;
+}
+
+.btn-login:hover{
+background:black;
+}
+
+/* LINKS */
+
+.link-opcao{
+margin-top:15px;
+font-size:14px;
+color:#4d2a03;
+cursor:pointer;
+}
+
+.link-opcao:hover{
+text-decoration:underline;
+}
+
+/* ===================================== */
+/* RESPONSIVIDADE LOGIN                  */
+/* ===================================== */
+
+@media(max-width:768px){
+
+.login-card{
+flex-direction:column;
+}
+
+.login-left{
+padding:30px;
+}
+
+.login-right{
+padding:30px;
+}
+
+}
