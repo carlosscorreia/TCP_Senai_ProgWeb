@@ -13,9 +13,12 @@ const create = async (usuarioId, total, enderecoEntrega, observacao, itens, moda
     const pedidoId = result.insertId;
 
     for (const item of itens) {
+      const nomeProduto = item.nome_produto || item.nome || 'Produto';
+      const produtoId = item.produto_id || null;
+
       await connection.query(
-        'INSERT INTO itens_pedido (pedido_id, produto_id, quantidade, preco_unitario) VALUES (?, ?, ?, ?)',
-        [pedidoId, item.produto_id, item.quantidade, item.preco_unitario]
+        'INSERT INTO itens_pedido (pedido_id, produto_id, nome_produto, quantidade, preco_unitario) VALUES (?, ?, ?, ?, ?)',
+        [pedidoId, produtoId, nomeProduto, item.quantidade, item.preco_unitario]
       );
     }
 
@@ -48,9 +51,10 @@ const getAll = () => {
 
 const getById = (id) => {
   return db.query(
-    `SELECT ip.*, pr.nome as produto_nome 
-     FROM itens_pedido ip 
-     JOIN produtos pr ON ip.produto_id = pr.id 
+    `SELECT ip.*, 
+            COALESCE(ip.nome_produto, pr.nome, 'Produto') as produto_nome
+     FROM itens_pedido ip
+     LEFT JOIN produtos pr ON ip.produto_id = pr.id
      WHERE ip.pedido_id = ?`,
     [id]
   );
