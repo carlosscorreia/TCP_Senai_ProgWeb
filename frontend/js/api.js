@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';
+const API_URL = 'https://lanchonete-backend-qs4d.onrender.com';
 
 async function apiFetch(rota, opcoes = {}) {
   const token = localStorage.getItem('token');
