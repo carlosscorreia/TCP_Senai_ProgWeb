@@ -165,5 +165,7 @@ URL: [https://burguerlanchonete.vercel.app/admin/login.html](https://burguerlanc
 ## 👨‍💻 Desenvolvido por
 
 Carlos Eduardo Silva Correia — SENAI · Curso de Programador Web · 2026
+
 Carlos Henrique Silva Barreto — SENAI · Curso de Programador Web · 2026 
+
 Elin Almeida da Fonseca — SENAI · Curso de Programador Web · 2026
