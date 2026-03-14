@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/43w72SzM/logo.avif">
   <style>
     .form-container {
       max-width: 420px;
@@ -12,7 +14,7 @@
       background: var(--branco);
       padding: 32px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
     .form-container h1 {
@@ -40,65 +42,67 @@
     }
   </style>
 </head>
+
 <body>
 
-<main>
-  <div class="form-container">
-    <h1> Painel Admin</h1>
-    <p>Lanchonete — Área restrita</p>
+  <main>
+    <div class="form-container">
+      <h1> Painel Admin</h1>
+      <p>Lanchonete — Área restrita</p>
 
-    <div id="mensagem"></div>
+      <div id="mensagem"></div>
 
-    <div class="input-group">
-      <label>E-mail</label>
-      <input type="email" id="email" placeholder="admin@lanchonete.com">
+      <div class="input-group">
+        <label>E-mail</label>
+        <input type="email" id="email" placeholder="admin@lanchonete.com">
+      </div>
+
+      <div class="input-group">
+        <label>Senha</label>
+        <input type="password" id="senha" placeholder="Sua senha">
+      </div>
+
+      <button class="btn btn-laranja" onclick="fazerLogin()">Entrar</button>
     </div>
+  </main>
 
-    <div class="input-group">
-      <label>Senha</label>
-      <input type="password" id="senha" placeholder="Sua senha">
-    </div>
-
-    <button class="btn btn-laranja" onclick="fazerLogin()">Entrar</button>
-  </div>
-</main>
-
-<script src="../js/api.js"></script>
-<script>
-  // Se já está logado como admin, vai direto pro dashboard
-  if (localStorage.getItem('adminToken')) {
-    window.location.href = 'index.html';
-  }
-
-  async function fazerLogin() {
-    const mensagem = document.getElementById('mensagem');
-
-    const dados = {
-      email: document.getElementById('email').value,
-      senha: document.getElementById('senha').value,
-    };
-
-    if (!dados.email || !dados.senha) {
-      mensagem.innerHTML = '<div class="mensagem-erro">Preencha e-mail e senha!</div>';
-      return;
-    }
-
-    try {
-      const resposta = await apiFetch('/api/admin/login', {
-        method: 'POST',
-        body: JSON.stringify(dados),
-      });
-
-      localStorage.setItem('adminToken', resposta.token);
-      localStorage.setItem('adminNome', resposta.nome);
-
+  <script src="../js/api.js"></script>
+  <script>
+    // Se já está logado como admin, vai direto pro dashboard
+    if (localStorage.getItem('adminToken')) {
       window.location.href = 'index.html';
-
-    } catch (error) {
-      mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
     }
-  }
-</script>
+
+    async function fazerLogin() {
+      const mensagem = document.getElementById('mensagem');
+
+      const dados = {
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value,
+      };
+
+      if (!dados.email || !dados.senha) {
+        mensagem.innerHTML = '<div class="mensagem-erro">Preencha e-mail e senha!</div>';
+        return;
+      }
+
+      try {
+        const resposta = await apiFetch('/api/admin/login', {
+          method: 'POST',
+          body: JSON.stringify(dados),
+        });
+
+        localStorage.setItem('adminToken', resposta.token);
+        localStorage.setItem('adminNome', resposta.nome);
+
+        window.location.href = 'index.html';
+
+      } catch (error) {
+        mensagem.innerHTML = `<div class="mensagem-erro">${error.message}</div>`;
+      }
+    }
+  </script>
 
 </body>
+
 </html>

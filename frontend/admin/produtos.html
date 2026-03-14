@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Produtos Admin</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/43w72SzM/logo.avif">
   <style>
-    body { display: flex; min-height: 100vh; }
+    body {
+      display: flex;
+      min-height: 100vh;
+    }
 
     .sidebar {
       width: 220px;
@@ -27,7 +32,10 @@
       text-decoration: none;
     }
 
-    .sidebar nav { margin-top: 16px; flex: 1; }
+    .sidebar nav {
+      margin-top: 16px;
+      flex: 1;
+    }
 
     .sidebar nav a {
       display: block;
@@ -55,7 +63,9 @@
       font-family: 'Poppins', sans-serif;
     }
 
-    .sidebar .btn-sair:hover { color: #ff4444; }
+    .sidebar .btn-sair:hover {
+      color: #ff4444;
+    }
 
     .conteudo {
       margin-left: 220px;
@@ -71,7 +81,9 @@
       margin-bottom: 24px;
     }
 
-    .topo h1 { font-size: 1.5rem; }
+    .topo h1 {
+      font-size: 1.5rem;
+    }
 
     table {
       width: 100%;
@@ -79,7 +91,7 @@
       background: var(--branco);
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
     th {
@@ -97,7 +109,9 @@
       vertical-align: middle;
     }
 
-    tr:last-child td { border-bottom: none; }
+    tr:last-child td {
+      border-bottom: none;
+    }
 
     td img {
       width: 50px;
@@ -106,7 +120,10 @@
       border-radius: 6px;
     }
 
-    .acoes { display: flex; gap: 8px; }
+    .acoes {
+      display: flex;
+      gap: 8px;
+    }
 
     .btn-editar {
       padding: 6px 14px;
@@ -134,15 +151,19 @@
     .modal-overlay {
       display: none;
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.5);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
       z-index: 1000;
       justify-content: center;
       align-items: center;
     }
 
-    .modal-overlay.aberto { display: flex; }
+    .modal-overlay.aberto {
+      display: flex;
+    }
 
     .modal {
       background: var(--branco);
@@ -166,130 +187,141 @@
       margin-top: 16px;
     }
 
-    .modal-botoes button { flex: 1; }
+    .modal-botoes button {
+      flex: 1;
+    }
 
     @media (max-width: 768px) {
-      .sidebar { display: none; }
-      .conteudo { margin-left: 0; padding: 16px; }
+      .sidebar {
+        display: none;
+      }
+
+      .conteudo {
+        margin-left: 0;
+        padding: 16px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-    <aside class="sidebar">
-        <a href="index.html" class="logo"> Admin</a>
-        <nav>
-            <a href="index.html" class="ativo"> Dashboard</a>
-            <a href="produtos.html"> Produtos</a>
-            <a href="pedidos.html"> Pedidos</a>
-        </nav>
-        <button class="btn-sair" onclick="sairAdmin()"> Sair</button>
-    </aside>
+  <aside class="sidebar">
+    <a href="index.html" class="logo"> Admin</a>
+    <nav>
+      <a href="index.html" class="ativo"> Dashboard</a>
+      <a href="produtos.html"> Produtos</a>
+      <a href="pedidos.html"> Pedidos</a>
+    </nav>
+    <button class="btn-sair" onclick="sairAdmin()"> Sair</button>
+  </aside>
 
-<div class="conteudo">
-  <div class="topo">
-    <h1> Produtos</h1>
-    <button class="btn btn-laranja" onclick="abrirModal()">+ Novo Produto</button>
+  <div class="conteudo">
+    <div class="topo">
+      <h1> Produtos</h1>
+      <button class="btn btn-laranja" onclick="abrirModal()">+ Novo Produto</button>
+    </div>
+
+    <div id="mensagem"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Foto</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Preço</th>
+          <th>Promoção</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-body">
+        <tr>
+          <td colspan="6">Carregando...</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div id="mensagem"></div>
+  <!-- Modal -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <h2 id="modal-titulo">Novo Produto</h2>
+      <input type="hidden" id="produto-id">
 
-  <table>
-    <thead>
-      <tr>
-        <th>Foto</th>
-        <th>Nome</th>
-        <th>Categoria</th>
-        <th>Preço</th>
-        <th>Promoção</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody id="tabela-body">
-      <tr><td colspan="6">Carregando...</td></tr>
-    </tbody>
-  </table>
-</div>
+      <div class="input-group">
+        <label>Nome</label>
+        <input type="text" id="produto-nome" placeholder="Ex: X-Burguer">
+      </div>
+      <div class="input-group">
+        <label>Descrição</label>
+        <textarea id="produto-descricao" rows="2" placeholder="Ingredientes..."></textarea>
+      </div>
+      <div class="input-group">
+        <label>Categoria</label>
+        <select id="produto-categoria">
+          <option value="Lanches">Lanches</option>
+          <option value="Porções">Porções</option>
+          <option value="Bebidas">Bebidas</option>
+          <option value="Sobremesas">Sobremesas</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Preço (R$)</label>
+        <input type="number" id="produto-preco" step="0.01" placeholder="0.00">
+      </div>
+      <div class="input-group">
+        <label>Preço Promocional (R$) — opcional</label>
+        <input type="number" id="produto-preco-promo" step="0.01" placeholder="0.00">
+      </div>
+      <div class="input-group">
+        <label>URL da Imagem</label>
+        <input type="text" id="produto-imagem" placeholder="https://...">
+      </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal">
-  <div class="modal">
-    <h2 id="modal-titulo">Novo Produto</h2>
-    <input type="hidden" id="produto-id">
-
-    <div class="input-group">
-      <label>Nome</label>
-      <input type="text" id="produto-nome" placeholder="Ex: X-Burguer">
-    </div>
-    <div class="input-group">
-      <label>Descrição</label>
-      <textarea id="produto-descricao" rows="2" placeholder="Ingredientes..."></textarea>
-    </div>
-    <div class="input-group">
-      <label>Categoria</label>
-      <select id="produto-categoria">
-        <option value="Lanches">Lanches</option>
-        <option value="Porções">Porções</option>
-        <option value="Bebidas">Bebidas</option>
-        <option value="Sobremesas">Sobremesas</option>
-      </select>
-    </div>
-    <div class="input-group">
-      <label>Preço (R$)</label>
-      <input type="number" id="produto-preco" step="0.01" placeholder="0.00">
-    </div>
-    <div class="input-group">
-      <label>Preço Promocional (R$) — opcional</label>
-      <input type="number" id="produto-preco-promo" step="0.01" placeholder="0.00">
-    </div>
-    <div class="input-group">
-      <label>URL da Imagem</label>
-      <input type="text" id="produto-imagem" placeholder="https://...">
-    </div>
-
-    <div class="modal-botoes">
-      <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
-      <button class="btn btn-laranja" onclick="salvarProduto()">Salvar</button>
+      <div class="modal-botoes">
+        <button class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
+        <button class="btn btn-laranja" onclick="salvarProduto()">Salvar</button>
+      </div>
     </div>
   </div>
-</div>
 
-<script src="../js/api.js"></script>
-<script>
-  if (!localStorage.getItem('adminToken')) {
-    window.location.href = 'login.html';
-  }
+  <script src="../js/api.js"></script>
+  <script>
+    if (!localStorage.getItem('adminToken')) {
+      window.location.href = 'login.html';
+    }
 
-  function sairAdmin() {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminNome');
-    window.location.href = 'login.html';
-  }
+    function sairAdmin() {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminNome');
+      window.location.href = 'login.html';
+    }
 
-  async function adminFetch(rota, opcoes = {}) {
-    const token = localStorage.getItem('adminToken');
-    const headers = {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...opcoes.headers,
-    };
-    const response = await fetch(`https://lanchonete-backend-qs4d.onrender.com${rota}`, { ...opcoes, headers });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.erro || 'Erro');
-    return data;
-  }
+    async function adminFetch(rota, opcoes = {}) {
+      const token = localStorage.getItem('adminToken');
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...opcoes.headers,
+      };
+      const response = await fetch(`https://lanchonete-backend-qs4d.onrender.com${rota}`, { ...opcoes, headers });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.erro || 'Erro');
+      return data;
+    }
 
-  async function carregarProdutos() {
-    try {
-      const produtos = await adminFetch('/api/products');
-      const tbody = document.getElementById('tabela-body');
+    async function carregarProdutos() {
+      try {
+        const produtos = await adminFetch('/api/products');
+        const tbody = document.getElementById('tabela-body');
 
-      if (produtos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
-        return;
-      }
+        if (produtos.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6">Nenhum produto cadastrado.</td></tr>';
+          return;
+        }
 
-      tbody.innerHTML = produtos.map(p => `
+        tbody.innerHTML = produtos.map(p => `
         <tr>
           <td><img src="${p.imagem_url}" alt="${p.nome}"></td>
           <td>${p.nome}</td>
@@ -304,81 +336,82 @@
           </td>
         </tr>
       `).join('');
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  function abrirModal() {
-    document.getElementById('modal-titulo').textContent = 'Novo Produto';
-    document.getElementById('produto-id').value = '';
-    document.getElementById('produto-nome').value = '';
-    document.getElementById('produto-descricao').value = '';
-    document.getElementById('produto-preco').value = '';
-    document.getElementById('produto-preco-promo').value = '';
-    document.getElementById('produto-imagem').value = '';
-    document.getElementById('modal').classList.add('aberto');
-  }
-
-  function editarProduto(p) {
-    document.getElementById('modal-titulo').textContent = 'Editar Produto';
-    document.getElementById('produto-id').value = p.id;
-    document.getElementById('produto-nome').value = p.nome;
-    document.getElementById('produto-descricao').value = p.descricao;
-    document.getElementById('produto-categoria').value = p.categoria;
-    document.getElementById('produto-preco').value = p.preco;
-    document.getElementById('produto-preco-promo').value = p.preco_promocional || '';
-    document.getElementById('produto-imagem').value = p.imagem_url;
-    document.getElementById('modal').classList.add('aberto');
-  }
-
-  function fecharModal() {
-    document.getElementById('modal').classList.remove('aberto');
-  }
-
-  async function salvarProduto() {
-    const id = document.getElementById('produto-id').value;
-    const dados = {
-      nome:             document.getElementById('produto-nome').value,
-      descricao:        document.getElementById('produto-descricao').value,
-      categoria:        document.getElementById('produto-categoria').value,
-      preco:            document.getElementById('produto-preco').value,
-      preco_promocional:document.getElementById('produto-preco-promo').value || null,
-      imagem_url:       document.getElementById('produto-imagem').value,
-      disponivel:       1,
-    };
-
-    try {
-      if (id) {
-        await adminFetch(`/api/products/${id}`, {
-          method: 'PUT',
-          body: JSON.stringify(dados),
-        });
-      } else {
-        await adminFetch('/api/products', {
-          method: 'POST',
-          body: JSON.stringify(dados),
-        });
+      } catch (error) {
+        console.error(error);
       }
-      fecharModal();
-      carregarProdutos();
-    } catch (error) {
-      alert('Erro ao salvar produto: ' + error.message);
     }
-  }
 
-  async function deletarProduto(id) {
-    if (!confirm('Tem certeza que deseja remover este produto?')) return;
-    try {
-      await adminFetch(`/api/products/${id}`, { method: 'DELETE' });
-      carregarProdutos();
-    } catch (error) {
-      alert('Erro ao remover produto: ' + error.message);
+    function abrirModal() {
+      document.getElementById('modal-titulo').textContent = 'Novo Produto';
+      document.getElementById('produto-id').value = '';
+      document.getElementById('produto-nome').value = '';
+      document.getElementById('produto-descricao').value = '';
+      document.getElementById('produto-preco').value = '';
+      document.getElementById('produto-preco-promo').value = '';
+      document.getElementById('produto-imagem').value = '';
+      document.getElementById('modal').classList.add('aberto');
     }
-  }
 
-  carregarProdutos();
-</script>
+    function editarProduto(p) {
+      document.getElementById('modal-titulo').textContent = 'Editar Produto';
+      document.getElementById('produto-id').value = p.id;
+      document.getElementById('produto-nome').value = p.nome;
+      document.getElementById('produto-descricao').value = p.descricao;
+      document.getElementById('produto-categoria').value = p.categoria;
+      document.getElementById('produto-preco').value = p.preco;
+      document.getElementById('produto-preco-promo').value = p.preco_promocional || '';
+      document.getElementById('produto-imagem').value = p.imagem_url;
+      document.getElementById('modal').classList.add('aberto');
+    }
+
+    function fecharModal() {
+      document.getElementById('modal').classList.remove('aberto');
+    }
+
+    async function salvarProduto() {
+      const id = document.getElementById('produto-id').value;
+      const dados = {
+        nome: document.getElementById('produto-nome').value,
+        descricao: document.getElementById('produto-descricao').value,
+        categoria: document.getElementById('produto-categoria').value,
+        preco: document.getElementById('produto-preco').value,
+        preco_promocional: document.getElementById('produto-preco-promo').value || null,
+        imagem_url: document.getElementById('produto-imagem').value,
+        disponivel: 1,
+      };
+
+      try {
+        if (id) {
+          await adminFetch(`/api/products/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(dados),
+          });
+        } else {
+          await adminFetch('/api/products', {
+            method: 'POST',
+            body: JSON.stringify(dados),
+          });
+        }
+        fecharModal();
+        carregarProdutos();
+      } catch (error) {
+        alert('Erro ao salvar produto: ' + error.message);
+      }
+    }
+
+    async function deletarProduto(id) {
+      if (!confirm('Tem certeza que deseja remover este produto?')) return;
+      try {
+        await adminFetch(`/api/products/${id}`, { method: 'DELETE' });
+        carregarProdutos();
+      } catch (error) {
+        alert('Erro ao remover produto: ' + error.message);
+      }
+    }
+
+    carregarProdutos();
+  </script>
 
 </body>
+
 </html>
