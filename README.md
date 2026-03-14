@@ -1,6 +1,6 @@
-# 🍔 Burguer Lanchonete — Sistema de Pedidos Online
+# 🍔 Burguer Lanchonete - Sistema de Pedidos Online
 
-Trabalho Final de Curso — Programador Web · SENAI
+Trabalho Final de Curso - Programador Web · SENAI
 
 🔗 **Site:** [https://burguerlanchonete.vercel.app](https://burguerlanchonete.vercel.app)  
 🔗 **API:** [https://lanchonete-backend-qs4d.onrender.com](https://lanchonete-backend-qs4d.onrender.com)
@@ -22,8 +22,8 @@ Sistema completo de pedidos online para uma lanchonete, desenvolvido como trabal
 ### Backend
 - Node.js
 - Express.js
-- JWT (jsonwebtoken) — autenticação
-- bcryptjs — criptografia de senhas
+- JWT (jsonwebtoken) - autenticação
+- bcryptjs - criptografia de senhas
 - dotenv, cors
 - Hospedado no **Render**
 
@@ -38,7 +38,7 @@ Sistema completo de pedidos online para uma lanchonete, desenvolvido como trabal
 ```
 TCP_Senai_ProgWeb/
 ├── frontend/
-│   ├── index.html             # Página inicial — cardápio
+│   ├── index.html             # Página inicial - cardápio
 │   ├── login.html             # Tela de login
 │   ├── cadastro.html          # Tela de cadastro
 │   ├── carrinho.html          # Carrinho de compras
@@ -132,7 +132,7 @@ URL: [https://burguerlanchonete.vercel.app/admin/login.html](https://burguerlanc
 
 ---
 
-## 🗄 Banco de Dados — Tabelas
+## 🗄 Banco de Dados - Tabelas
 
 | Tabela | Descrição |
 |---|---|
@@ -148,12 +148,12 @@ URL: [https://burguerlanchonete.vercel.app/admin/login.html](https://burguerlanc
 
 | Método | Rota | Auth | Descrição |
 |---|---|---|---|
-| POST | /api/users/register | — | Cadastrar usuário |
-| POST | /api/users/login | — | Login do cliente |
-| GET | /api/products | — | Listar produtos |
+| POST | /api/users/register | - | Cadastrar usuário |
+| POST | /api/users/login | - | Login do cliente |
+| GET | /api/products | - | Listar produtos |
 | POST | /api/orders | Usuário | Criar pedido |
 | GET | /api/orders/my | Usuário | Meus pedidos |
-| POST | /api/admin/login | — | Login do admin |
+| POST | /api/admin/login | - | Login do admin |
 | GET | /api/admin/dashboard | Admin | Dados do dashboard |
 | POST | /api/products | Admin | Criar produto |
 | PUT | /api/products/:id | Admin | Editar produto |
@@ -164,10 +164,10 @@ URL: [https://burguerlanchonete.vercel.app/admin/login.html](https://burguerlanc
 
 ## 👨‍💻 Desenvolvido por
 
-Beatriz Souza Gonçalves — SENAI · Curso de Programador Web · 2026
+Beatriz Souza Gonçalves - SENAI · Curso de Programador Web · 2026
 
-Carlos Eduardo Silva Correia — SENAI · Curso de Programador Web · 2026
+Carlos Eduardo Silva Correia - SENAI · Curso de Programador Web · 2026
 
-Carlos Henrique Silva Barreto — SENAI · Curso de Programador Web · 2026 
+Carlos Henrique Silva Barreto - SENAI · Curso de Programador Web · 2026 
 
-Elin Almeida da Fonseca — SENAI · Curso de Programador Web · 2026
+Elin Almeida da Fonseca - SENAI · Curso de Programador Web · 2026
