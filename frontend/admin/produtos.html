@@ -273,7 +273,7 @@
       Authorization: `Bearer ${token}`,
       ...opcoes.headers,
     };
-    const response = await fetch(`http://localhost:3000${rota}`, { ...opcoes, headers });
+    const response = await fetch(`https://lanchonete-backend-qs4d.onrender.com${rota}`, { ...opcoes, headers });
     const data = await response.json();
     if (!response.ok) throw new Error(data.erro || 'Erro');
     return data;
