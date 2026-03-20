@@ -17,7 +17,8 @@ Sistema completo de pedidos online para uma lanchonete, desenvolvido como trabal
 
 ### Frontend
 - HTML5, CSS3, JavaScript
-- Fonte: Google Fonts — Poppins
+- Bootstrap 5.3.x
+- Fonte: Google Fonts: Poppins
 - API ViaCEP (busca automática de endereço por CEP)
 - QRCode.js (geração de QR Code para confirmação via WhatsApp)
 - Hospedado no **Vercel**
